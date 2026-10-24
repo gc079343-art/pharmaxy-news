@@ -30,6 +30,21 @@ function imageOf(i) {
   return m ? m[1] : "";
 }
 
+const isLogo = u => !u || /logo|\.svg(\?|$)/i.test(u);
+
+async function ogImage(url) {
+  try {
+    const ctl = new AbortController();
+    const t = setTimeout(() => ctl.abort(), 6000);
+    const r = await fetch(url, { signal: ctl.signal, headers: { "User-Agent": "Mozilla/5.0 PharmaxyNews" } });
+    clearTimeout(t);
+    const html = (await r.text()).slice(0, 200000);
+    const m = /<meta[^>]+(?:property|name)=["']og:image["'][^>]+content=["']([^"']+)["']/i.exec(html)
+           || /<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["']og:image["']/i.exec(html);
+    return m && !isLogo(m[1]) ? m[1] : "";
+  } catch (e) { return ""; }
+}
+
 let cache = { at: 0, news: [] };
 
 async function loadAll() {
@@ -43,7 +58,11 @@ async function loadAll() {
       }));
     } catch (e) { console.error(f.source, e.message); return []; }
   }));
-  cache = { at: Date.now(), news: [].concat(...res).sort((a, b) => new Date(b.date) - new Date(a.date)) };
+  const news = [].concat(...res).sort((a, b) => new Date(b.date) - new Date(a.date));
+  await Promise.all(news.map(async n => {
+    if (isLogo(n.image)) n.image = n.link ? await ogImage(n.link) : "";
+  }));
+  cache = { at: Date.now(), news };
   return cache.news;
 }
 
