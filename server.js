@@ -5,6 +5,7 @@ const path = require("path");
 const app = express();
 const parser = new Parser({
   timeout: 10000,
+  headers: { "User-Agent": "Mozilla/5.0 (compatible; PharmaxyNews/1.0)", "Accept": "application/rss+xml, application/xml, text/xml, */*" },
   customFields: { item: [["media:content", "mediaContent", { keepArray: false }], ["media:thumbnail", "mediaThumb"]] }
 });
 
