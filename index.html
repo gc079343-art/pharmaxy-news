@@ -1,0 +1,1212 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharmacy Explore</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f8fb; }
+    .fade-in { animation: fadeIn 0.4s ease forwards; }
+    .fade-out { animation: fadeOut 0.4s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
+    .card-hover:hover { transform: scale(1.02); transition: 0.3s; }
+    .active-tab { color: #1d4ed8 !important; }
+    .active-subtab { background-color: #2563eb !important; color: #ffffff !important; }
+  
+    html{scroll-behavior:smooth}
+    body{transition:background .35s,color .35s;-webkit-tap-highlight-color:transparent}
+    #global-header{backdrop-filter:blur(14px);background:rgba(255,255,255,.85)!important}
+    #global-nav{backdrop-filter:blur(14px);background:rgba(255,255,255,.92)!important;border-radius:22px 22px 0 0;padding:8px 4px!important}
+    #global-nav button{flex:1;transition:transform .2s,color .2s}#global-nav button:active{transform:scale(.88)}
+    #global-nav .active-tab i{transform:translateY(-2px) scale(1.18);transition:.25s}
+    .card-hover{transition:transform .25s,box-shadow .25s}.card-hover:active{transform:scale(.98)}
+    .app-view{animation:fadeIn .4s ease both}
+    #homeMedicineList>div,#categorySpecificMedicineList>div,#exploreResultsList>div{animation:fadeIn .45s ease both;content-visibility:auto}
+    .wel-msg{position:absolute;bottom:34px;left:0;right:0;text-align:center;font-size:14px;font-weight:600;letter-spacing:.3px;opacity:.95;animation:fadeIn 1s .4s ease both}
+    .brw-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;font-size:12px;font-weight:700;background:#dbeafe;color:#1e40af;white-space:nowrap}
+    .brw-card{display:block;background:#fff;border-radius:20px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.06);transition:transform .2s}.brw-card:active{transform:scale(.98)}
+    .dark body{background:#0b1220;color:#e5e7eb}
+    .dark #global-header{background:rgba(15,23,42,.85)!important}.dark #global-nav{background:rgba(15,23,42,.94)!important;border-color:#1e293b}
+    .dark .bg-white,.dark .brw-card{background:#131c31!important}
+    .dark .bg-gray-50,.dark .bg-gray-100,.dark .bg-gray-200{background:#1b2640!important}
+    .dark .bg-blue-50,.dark .bg-blue-100,.dark .brw-chip{background:#16264a!important;color:#93c5fd!important}
+    .dark .bg-amber-50,.dark .bg-amber-100\/60{background:#2a2110!important}
+    .dark .text-gray-500,.dark .text-gray-600,.dark .text-gray-700,.dark .text-gray-800,.dark .text-gray-400{color:#aab4c5!important}
+    .dark .text-blue-900,.dark .text-blue-800,.dark .text-amber-900,.dark .text-amber-950,.dark .text-blue-950,.dark .text-slate-800,.dark .text-zinc-900,.dark .text-teal-800,.dark .text-emerald-800{color:#dbeafe!important}
+    .dark .border,.dark .border-b,.dark [class*=border-gray],.dark [class*=border-blue-],.dark [class*=border-amber]{border-color:#26324d!important}
+    .dark input,.dark select,.dark textarea{background:#0f1729!important;color:#e5e7eb!important;border-color:#2a3757!important}
+    .dark #detailsModal>div{background:#131c31!important}
+  
+    .news-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .news-card{display:flex;flex-direction:column;background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08);transition:transform .2s}.news-card:active{transform:scale(.97)}
+    .news-big{grid-column:1/-1}
+    .news-img{position:relative;height:110px;background:linear-gradient(135deg,#1d4ed8,#60a5fa);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.6);font-size:30px}.news-big .news-img{height:190px}
+    .news-body{padding:10px 12px 12px}.news-src{font-size:10px;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:.4px}
+    .news-title{font-size:13px;font-weight:700;color:#1e3a8a;margin-top:4px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.news-big .news-title{font-size:16px}
+    .dark .news-card{background:#131c31}.dark .news-title{color:#dbeafe}
+
+    .ie-frame{border:1px solid #7da2d6;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 4px 16px rgba(30,64,175,.15)}
+    .ie-bar{display:flex;align-items:center;gap:8px;padding:8px 10px;background:linear-gradient(#e8f0fc,#c9daf2);border-bottom:1px solid #9db8e0}
+    .ie-logo{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7cc4ff,#1565c0);color:#fff;font:italic 800 18px/26px Georgia,serif;text-align:center;flex:none;box-shadow:0 0 0 2px #ffd54a inset}
+    .ie-addr{flex:1;min-width:0;background:#fff;border:1px solid #8fb0dc;border-radius:6px;padding:5px 9px;font-size:11px;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .ie-addr i{color:#16a34a;margin-right:5px}
+    .ie-btn{flex:none;width:28px;height:28px;border-radius:6px;border:1px solid #9db8e0;background:linear-gradient(#fff,#dce8f8);color:#1d4ed8;font-size:12px}
+    .ie-tabs{display:flex;gap:2px;overflow-x:auto;padding:6px 8px 0;background:#d7e4f6;border-bottom:1px solid #9db8e0;scrollbar-width:none}.ie-tabs::-webkit-scrollbar{display:none}
+    .ie-tab{flex:none;padding:6px 12px;font-size:11px;font-weight:700;color:#1e3a8a;background:#eaf1fb;border:1px solid #9db8e0;border-bottom:0;border-radius:8px 8px 0 0}
+    .ie-tab.on{background:#fff;color:#1d4ed8}
+    .ie-hero{position:relative}
+    .ie-track,.ie-strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch;cursor:grab;user-select:none;touch-action:pan-x pan-y}
+    .ie-track::-webkit-scrollbar,.ie-strip::-webkit-scrollbar{display:none}
+    .ie-track.drag,.ie-strip.drag{scroll-snap-type:none;cursor:grabbing}
+    .ie-slide{position:relative;flex:0 0 100%;height:230px;scroll-snap-align:start;overflow:hidden;cursor:pointer}
+    .ie-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.55);font-size:44px}
+    .ie-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+    .ie-cap{position:absolute;left:0;right:0;bottom:0;padding:34px 14px 26px;background:linear-gradient(transparent,rgba(0,0,0,.82));color:#fff}
+    .ie-cap h4{font-size:15px;font-weight:800;line-height:1.25;margin:4px 0 6px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .ie-src{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;background:#2563eb;padding:2px 8px;border-radius:999px}
+    .ie-more{font-size:11px;font-weight:700;color:#fde68a}
+    .ie-nav{position:absolute;top:80px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;z-index:2}.ie-nav.l{left:8px}.ie-nav.r{right:8px}
+    .ie-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:6px;z-index:2}
+    .ie-dots b{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.5);transition:.25s}.ie-dots b.on{width:20px;border-radius:5px;background:#fff}
+    .ie-sub{padding:8px 12px 2px;font-size:11px;font-weight:800;color:#1e40af;text-transform:uppercase;letter-spacing:.4px}
+    .ie-strip{gap:10px;padding:6px 12px 12px;scroll-snap-type:x proximity}
+    .ie-mini{flex:0 0 150px;scroll-snap-align:start;border-radius:12px;overflow:hidden;background:#f1f5fb;border:1px solid #d3e0f3;cursor:pointer}
+    .ie-mini .ph{position:relative;height:84px}.ie-mini .ph .ie-ph{font-size:24px}
+    .ie-mini p{font-size:11px;font-weight:700;color:#1e3a8a;padding:7px 8px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .dark .ie-frame{background:#0f1729;border-color:#2a3f6b}.dark .ie-bar{background:linear-gradient(#1b2a4a,#142040);border-color:#2a3f6b}
+    .dark .ie-addr{background:#0b1220;border-color:#2a3f6b;color:#aab4c5}.dark .ie-btn{background:#1b2a4a;border-color:#2a3f6b;color:#93c5fd}
+    .dark .ie-tabs{background:#142040;border-color:#2a3f6b}.dark .ie-tab{background:#1b2a4a;color:#93c5fd;border-color:#2a3f6b}.dark .ie-tab.on{background:#0f1729;color:#fff}
+    .dark .ie-mini{background:#131c31;border-color:#26324d}.dark .ie-mini p,.dark .ie-sub{color:#dbeafe}
+    .med-why{background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0}.med-risk{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+    .dark .med-why{background:#0b2a22;color:#a7f3d0;border-color:#14532d}.dark .med-risk{background:#2a1215;color:#fecaca;border-color:#7f1d1d}
+
+
+    .pn{--bg:#101318;--sf:#191e26;--sl:#252b35;--pr:#45d6a5;--tx:#fff;--sc:#a5adba;background:var(--bg);color:var(--tx);min-height:80vh;padding-bottom:20px}
+    .pn *{box-sizing:border-box}
+    .pn-head{padding:18px 16px 12px}.pn-logo{font-size:21px;font-weight:800;color:var(--pr);margin-bottom:14px;letter-spacing:.5px}.pn-logo span{color:#fff}
+    .pn-search{background:var(--sl);border-radius:15px;padding:13px}.pn-search input{background:transparent!important;border:0!important;outline:0;color:#fff!important;width:100%;font-size:15px;padding:0!important}.pn-search input::placeholder{color:var(--sc)}
+    .pn-cats{display:flex;gap:10px;overflow-x:auto;padding:0 16px 16px;scrollbar-width:none}.pn-cats::-webkit-scrollbar{display:none}
+    .pn-cat{background:var(--sl);color:#fff;padding:10px 16px;border:0;border-radius:25px;white-space:nowrap;font-size:13px}.pn-cat.on{background:var(--pr);color:#101318;font-weight:700}
+    .pn-body{padding:0 16px}.pn-sec{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.pn-sec h2{font-size:21px;font-weight:800;color:#fff}.pn-sec h2 span{color:var(--pr)}
+    .pn-btn{background:var(--sl);border:0;color:var(--pr);padding:9px 13px;border-radius:12px;font-size:12px;font-weight:700}
+    .pn-feat{position:relative;height:260px;border-radius:20px;overflow:hidden;margin-bottom:22px;cursor:pointer}
+    .pn-feat::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 0%,rgba(0,0,0,.25) 35%,rgba(0,0,0,.95) 100%)}
+    .pn-fc{position:absolute;bottom:18px;left:18px;right:18px;z-index:2}.pn-fl{display:inline-block;background:var(--pr);color:#101318;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:800;margin-bottom:9px}
+    .pn-feat h3{font-size:19px;line-height:1.3;margin-bottom:8px;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pn-meta{color:#d0d5dc;font-size:12px}
+    .pn-list{display:flex;flex-direction:column;gap:14px}
+    .pn-card{display:flex;background:var(--sf);border-radius:16px;overflow:hidden;min-height:118px;cursor:pointer;transition:transform .2s}.pn-card:active{transform:scale(.98)}
+    .pn-thumb{position:relative;flex:none;width:110px}.pn-cc{padding:12px;display:flex;flex-direction:column;justify-content:space-between;flex:1;min-width:0}
+    .pn-ct{color:var(--pr);font-size:11px;font-weight:800;margin-bottom:6px;text-transform:uppercase}
+    .pn-card h4{font-size:14px;line-height:1.35;margin-bottom:8px;color:#fff;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}.pn-card .pn-meta{color:var(--sc);font-size:11px}
+    .pn-read{opacity:.55}.pn-msg{text-align:center;padding:32px;color:var(--sc);font-size:14px}.pn-err{background:#3a2025;color:#ffb7c0;border-radius:12px;padding:14px;margin-bottom:16px;font-size:13px}
+  </style>
+</head>
+<body class="min-h-screen pb-24">
+
+  <div id="internet-status-banner" class="fixed top-0 left-0 right-0 z-50 text-center py-2 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all duration-500 transform -translate-y-full shadow-md">
+    <span id="internet-status-icon"></span><span id="internet-status-text"></span>
+  </div>
+
+  <div id="welcome-screen" class="fixed inset-0 bg-gradient-to-br from-blue-700 to-blue-400 flex flex-col items-center justify-center z-50 text-white transition-opacity duration-500">
+    <i class="fa-solid fa-capsules text-7xl mb-4"></i>
+    <h1 class="text-4xl font-bold tracking-wide">Pharmacy Explore</h1>
+    <p class="wel-msg">App voltado para você estudante de farmácia</p>
+  </div>
+
+  <div id="splash" class="fixed inset-0 bg-gradient-to-br from-blue-700 to-blue-400 flex flex-col items-center justify-center z-40 text-white hidden">
+    <i class="fa-solid fa-capsules text-6xl mb-4 animate-pulse"></i>
+    <h1 class="text-3xl font-bold">Pharmacy Explore</h1>
+    <p class="mt-2 text-sm opacity-80">Carregando informações farmacêuticas...</p>
+    <p class="wel-msg">App voltado para você estudante de farmácia</p>
+  </div>
+
+  <header id="global-header" class="bg-white shadow-md p-4 sticky top-0 z-30 hidden">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div id="header-icon-container" class="bg-blue-600 text-white p-3 rounded-2xl"><i class="fa-solid fa-capsules"></i></div>
+        <div>
+          <h1 class="text-xl font-bold text-blue-800">Pharmacy Explore</h1>
+          <p id="header-subtitle" class="text-xs text-gray-500">Início</p>
+        </div>
+      </div>
+      <button id="theme-btn" onclick="toggleTheme()" class="bg-blue-50 text-blue-700 w-10 h-10 rounded-2xl text-lg" aria-label="Modo escuro"><i class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
+
+  <main id="view-home" class="app-view p-4 space-y-6 hidden fade-in">
+    <div class="bg-gradient-to-r from-blue-700 to-blue-400 rounded-3xl p-6 text-white shadow-lg">
+      <h2 class="text-2xl font-bold mb-2">Explore informações farmacêuticas</h2>
+      <p class="opacity-90">Acesse medicamentos, categorias e dados importantes de forma rápida e inteligente.</p>
+    </div>
+
+    <!-- CARD DE PROMPT DE DOWNLOAD DA INTERNET -->
+    <div id="internet-download-card" class="hidden bg-blue-50 border-2 border-blue-200 rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 fade-in">
+      <div class="flex items-center gap-3">
+        <div class="bg-blue-600 text-white p-3 rounded-2xl text-lg animate-bounce">
+          <i class="fa-solid fa-cloud-arrow-down"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-blue-900 text-base">Novos dados disponíveis online!</h3>
+          <p class="text-xs text-blue-700">Detectamos que você está conectado. Deseja atualizar sua lista de medicamentos?</p>
+        </div>
+      </div>
+      <button id="btn-download-cloud" onclick="downloadMedicinesFromInternet()" class="w-full sm:w-auto bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-blue-700 transition flex items-center justify-center gap-2 shadow shadow-blue-200">
+        <i class="fa-solid fa-download"></i> Baixar e Salvar
+      </button>
+    </div>
+
+    <div class="relative">
+      <input type="text" id="homeSearchInput" placeholder="Pesquisa rápida na Home..." class="w-full p-3 rounded-2xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm">
+      <i class="fa-solid fa-magnifying-glass absolute right-4 top-4 text-blue-500"></i>
+    </div>
+    <div>
+      <h2 class="text-xl font-bold text-blue-900 mb-3">Todos os Medicamentos</h2>
+      <div id="homeMedicineList" class="space-y-4"></div>
+    </div>
+  </main>
+
+  <main id="view-categories" class="app-view p-4 hidden fade-in">
+    <div id="categories-grid-wrapper">
+      <h2 class="text-xl font-bold text-blue-900 mb-4">Classes Terapêuticas</h2>
+      <div id="categories-grid" class="grid grid-cols-2 gap-4"></div>
+    </div>
+    <div id="category-detail-wrapper" class="hidden">
+      <button onclick="backToCategoriesGrid()" class="mb-4 flex items-center gap-2 text-blue-700 font-bold hover:underline">
+        <i class="fa-solid fa-arrow-left"></i> Voltar para Classes
+      </button>
+      <h2 id="selected-category-title" class="text-2xl font-bold text-blue-900 mb-4">Nome da Categoria</h2>
+      <div id="categorySpecificMedicineList" class="space-y-4"></div>
+    </div>
+  </main>
+
+  <main id="view-feed" class="app-view hidden fade-in">
+    <div class="pn">
+      <div class="pn-head">
+        <div class="pn-logo">PHARMAXY <span>NEWS</span></div>
+        <div class="pn-search"><input type="text" id="pnSearch" placeholder="Pesquisar notícias farmacêuticas..." oninput="renderFeed()"></div>
+      </div>
+      <nav class="pn-cats" id="pnCats">
+        <button class="pn-cat on" data-c="todas" onclick="pnCat(this)">Para você</button>
+        <button class="pn-cat" data-c="farmacologia" onclick="pnCat(this)">Farmacologia</button>
+        <button class="pn-cat" data-c="medicamentos" onclick="pnCat(this)">Medicamentos</button>
+        <button class="pn-cat" data-c="anvisa" onclick="pnCat(this)">Anvisa</button>
+        <button class="pn-cat" data-c="pesquisas" onclick="pnCat(this)">Pesquisas</button>
+        <button class="pn-cat" data-c="hospitalar" onclick="pnCat(this)">Farmácia Hospitalar</button>
+      </nav>
+      <div class="pn-body">
+        <div class="pn-sec"><h2>Pharmaxy <span>News</span></h2><div class="flex gap-2"><button class="pn-btn" onclick="feedReadAll()">Marcar lidas</button><button class="pn-btn" id="pnRefresh" onclick="loadFeed(true)">↻ Atualizar</button></div></div>
+        <div id="pnErr" class="pn-err hidden">Não foi possível carregar as notícias. Verifique a conexão e toque em Atualizar.</div>
+        <div id="pnFeat"></div>
+        <div id="pnList" class="pn-list"></div>
+        <div id="pnMsg" class="pn-msg"></div>
+      </div>
+    </div>
+  </main>
+
+  <main id="view-prescriptions" class="app-view p-4 space-y-4 hidden fade-in">
+    <h2 class="text-xl font-bold text-blue-900 mb-2">Tipos de Receitas Médicas</h2>
+    <p class="text-sm text-gray-600">Entenda os diferentes formatos de prescrições, suas regras de controle e principais preocupações de saúde.</p>
+    <div class="space-y-4">
+      <div class="bg-amber-50 rounded-3xl p-5 shadow border border-amber-200 space-y-3">
+        <div class="flex items-center gap-3 border-b border-amber-200 pb-2">
+          <div class="bg-amber-500 text-white p-2.5 rounded-xl"><i class="fa-solid fa-triangle-exclamation text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-amber-900">Notificação de Receita A (Receita Amarela)</h3>
+            <p class="text-xs text-amber-700 font-medium">Controle extremamente rigoroso pela ANVISA (Portaria 344/98)</p>
+          </div>
+        </div>
+        <p class="text-xs text-amber-950 leading-relaxed">A Notificação de Receita A é uma receita especial usada para medicamentos entorpecentes.</p>
+        <p class="text-xs text-amber-950"><strong class="text-amber-900">Características:</strong> Papel amarelo oficial, numerada pela Vigilância Sanitária, emitida somente por profissionais autorizados, normalmente válida por 30 dias, geralmente permite apenas 1 medicamento por receita e a farmácia fica com a receita.</p>
+        <p class="text-xs text-amber-950"><strong class="text-amber-900">Utilização:</strong> Usada para medicamentos com alto potencial de dependência, abuse, uso ilegal e overdose.</p>
+        <p class="text-xs text-rose-700 font-semibold"><i class="fa-solid fa-circle-exclamation"></i> Principais Preocupações: Dependência química severa, depressão respiratória, intoxicação grave, comércio ilegal, uso recreativo e risco elevado de overdose fatal.</p>
+        <div class="bg-amber-100/60 p-2.5 rounded-xl text-[11px] text-amber-900 space-y-1">
+          <p><strong>Controle em Farmácia:</strong> Registrar a venda, conferir dados do paciente/médico, armazenar a receita e seguir normas sanitárias.</p>
+          <p><strong>Diferença para a Receita Azul (B):</strong> A Receita A possui controle mais rígido e usa papel amarelo (entorpecentes). A Receita B usa papel azul e destina-se a psicotrópicos e ansiolíticos.</p>
+        </div>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow border border-gray-100 space-y-3">
+        <div class="flex items-center gap-3 border-b pb-2">
+          <div class="bg-slate-100 text-slate-700 p-2.5 rounded-xl"><i class="fa-solid fa-file-lines text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-gray-800">1. Receita Simples (Branca Comum)</h3>
+            <p class="text-xs text-gray-500">Para medicamentos comuns sem controle especial</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600"><strong class="text-slate-800">Características:</strong> Papel branco comum, normalmente 1 via, fácil emissão e muito usada em postos de saúde e clínicas.</p>
+        <p class="text-xs text-gray-600"><strong class="text-slate-800">Utilização:</strong> Medicamentos para dores, febre, pressão, diabetes, gastrite e alergias.</p>
+        <p class="text-xs text-rose-600 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Preocupações: Automedicação, uso incorreto e interações medicamentosas.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow border border-gray-100 space-y-3">
+        <div class="flex items-center gap-3 border-b pb-2">
+          <div class="bg-blue-50 text-blue-600 p-2.5 rounded-xl"><i class="fa-solid fa-shield-virus text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-gray-800">2. Receita de Antibióticos</h3>
+            <p class="text-xs text-gray-500">Exclusiva para antimicrobianos</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600"><strong class="text-blue-800">Características:</strong> Receita branca em 2 vias, a farmácia retém uma via e possui validade estrita de 10 dias.</p>
+        <p class="text-xs text-gray-600"><strong class="text-blue-800">Utilização:</strong> Tratamento de infecções bacterianas.</p>
+        <p class="text-xs text-rose-600 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Preocupações: Resistência bacteriana, interrupção precoce do tratamento e uso sem necessidade.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow border border-gray-100 space-y-3">
+        <div class="flex items-center gap-3 border-b pb-2">
+          <div class="bg-zinc-100 text-zinc-800 p-2.5 rounded-xl"><i class="fa-solid fa-file-signature text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-gray-800">3. Receita de Controle Especial (Branca – 2 vias)</h3>
+            <p class="text-xs text-gray-500">Controle rigoroso de substâncias específicas</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600"><strong class="text-zinc-900">Características:</strong> Receita branca, obrigatoriamente em 2 vias, controle mais rigoroso e validade geralmente de 30 dias.</p>
+        <p class="text-xs text-gray-600"><strong class="text-zinc-900">Utilização:</strong> Medicamentos psiquiátricos, neurológicos e alguns analgésicos fortes.</p>
+        <p class="text-xs text-rose-600 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Preocupações: Dependência, uso abusivo, sedação e overdose.</p>
+      </div>
+      <div class="bg-blue-50 rounded-3xl p-5 shadow border border-blue-200 space-y-3">
+        <div class="flex items-center gap-3 border-b border-blue-200 pb-2">
+          <div class="bg-blue-600 text-white p-2.5 rounded-xl"><i class="fa-solid fa-receipt text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-blue-900">4. Receita Azul (Notificação B)</h3>
+            <p class="text-xs text-blue-700">Destinada a psicotrópicos</p>
+          </div>
+        </div>
+        <p class="text-xs text-blue-950"><strong class="text-blue-900">Características:</strong> Papel azul, numerada pela Vigilância Sanitária, controle rígido e validade de 30 dias.</p>
+        <p class="text-xs text-blue-950"><strong class="text-blue-900">Utilização:</strong> Medicamentos para ansiedade, insônia e transtornos psiquiátricos.</p>
+        <p class="text-xs text-rose-700 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Preocupações: Dependência química, abstinência, sonolência e uso recreativo.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow border border-gray-100 space-y-3">
+        <div class="flex items-center gap-3 border-b pb-2">
+          <div class="bg-teal-50 text-teal-600 p-2.5 rounded-xl"><i class="fa-solid fa-laptop-medical text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-gray-800">5. Receita Digital / Eletrônica</h3>
+            <p class="text-xs text-gray-500">Modernidade e integração online</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600"><strong class="text-teal-800">Características:</strong> Emitida online, possui assinatura digital, pode ser enviada por celular ou e-mail e é muito usada na telemedicina.</p>
+        <p class="text-xs text-gray-600"><strong class="text-teal-800">Utilização:</strong> Diversos tipos de medicamentos, inclusive controlados.</p>
+        <p class="text-xs text-rose-600 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Preocupações: Fraudes digitais, verificação da autenticidade e erros de envio.</p>
+      </div>
+      <div class="bg-white rounded-3xl p-5 shadow border border-gray-100 space-y-3">
+        <div class="flex items-center gap-3 border-b pb-2">
+          <div class="bg-emerald-50 text-emerald-600 p-2.5 rounded-xl"><i class="fa-solid fa-calendar-days text-lg"></i></div>
+          <div>
+            <h3 class="font-bold text-gray-800">6. Receita de Uso Contínuo</h3>
+            <p class="text-xs text-gray-500">Tratamentos crônicos e de longa duração</p>
+          </div>
+        </div>
+        <p class="text-xs text-gray-600"><strong class="text-emerald-800">Características:</strong> Pode ser simples ou controlada, permite uso repetitivo do medicamento e é comum em doenças crônicas.</p>
+        <p class="text-xs text-gray-600"><strong class="text-emerald-800">Utilização:</strong> Hipertensão, diabetes, colesterol, ansiedade e asma.</p>
+        <p class="text-xs text-rose-600 font-semibold"><i class="fa-solid fa-triangle-exclamation"></i> Preocupações: Uso prolongado sem revisão médica, dependência em alguns casos e abandono do acompanhamento médico.</p>
+      </div>
+    </div>
+  </main>
+
+  <main id="view-info" class="app-view p-4 space-y-4 hidden fade-in">
+    <h2 class="text-xl font-bold text-blue-900 mb-2">Informações Institucionais</h2>
+    <div class="bg-white rounded-3xl shadow p-5 space-y-4">
+      <div class="border-b pb-3">
+        <h3 class="font-bold text-blue-800 text-lg flex items-center gap-2"><i class="fa-solid fa-circle-exclamation text-amber-500"></i> Propósito e Aviso Geral</h3>
+        <p class="text-gray-600 text-sm mt-1 leading-relaxed">Este app é voltado para <strong>balconistas iniciantes</strong> e para <strong>estudantes de farmácia</strong>, sendo um aplicativo totalmente voltado para a <strong>aprendizagem</strong>. Nenhuma informação contida substitui em hipótese alguma diagnóstico, tratamento ou receitas profissionais farmacêuticos e médicos.</p>
+      </div>
+      <div class="border-b pb-3">
+        <h3 class="font-bold text-blue-800 text-lg flex items-center gap-2"><i class="fa-solid fa-signature"></i> Desenvolvimento</h3>
+        <p class="text-gray-800 text-sm font-bold mt-1">Gabriel Costa Martins</p>
+        <p class="text-blue-600 text-xs font-semibold">Estudante de farmácia</p>
+        <p class="text-gray-500 text-xs mt-2 flex items-center gap-1"><i class="fa-solid fa-envelope"></i> Para mais ideias, mande para: <span class="font-mono text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">gc079343@gmail.com</span></p>
+      </div>
+      <div>
+        <h3 class="font-bold text-blue-800 text-lg flex items-center gap-2"><i class="fa-solid fa-code"></i> Versão do Aplicativo</h3>
+        <p class="text-gray-600 text-sm mt-1"><strong>Pharmacy Explore Mobile</strong><br>Versão v1.0<br>Base de dados local integrada e gerenciador ativo de edições.</p>
+      </div>
+    </div>
+  </main>
+
+  <main id="view-add" class="app-view p-4 space-y-4 hidden fade-in">
+    <div class="flex justify-between items-center"><h2 class="text-xl font-bold text-blue-900">Gerenciar Medicamentos</h2></div>
+    <div class="flex bg-gray-200 p-1 rounded-xl gap-1">
+      <button id="subtab-form" onclick="switchSubTab('form')" class="flex-1 text-center py-2 text-sm font-bold rounded-lg text-gray-600 active-subtab transition-all"><i class="fa-solid fa-pen-to-square mr-1"></i> Novo Registro</button>
+      <button id="subtab-history" onclick="switchSubTab('history')" class="flex-1 text-center py-2 text-sm font-bold rounded-lg text-gray-600 transition-all"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Histórico (<span id="history-count">0</span>)</button>
+    </div>
+    <div id="container-add-form" class="space-y-4">
+      <p id="form-instructions" class="text-sm text-gray-600">Insira as especificações abaixo para adicionar um novo registro ao banco de dados do seu aplicativo.</p>
+      <form id="addMedicineForm" onsubmit="handleCreateMedicine(event)" class="bg-white rounded-3xl shadow p-5 space-y-4">
+        <input type="hidden" id="editMedId" value="">
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Nome do Medicamento</label>
+          <input type="text" id="addName" required placeholder="Ex: Paracetamol, Dipirona..." class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Classe Terapêutica</label>
+          <select id="addClass" required class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-white"></select>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Dosagem / Miligramas / Unidades</label>
+          <input type="text" id="addMg" required placeholder="Ex: 500mg, 10mg/mL, 100 UI/mL..." class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Tipo / Forma Farmacêutica</label>
+          <select id="addType" required class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-white">
+            <option value="" disabled selected>Selecione o tipo físico...</option>
+            <option value="Comprimido">Comprimido</option><option value="Cápsula">Cápsula</option><option value="Gel">Gel</option><option value="Ampola">Ampola</option><option value="Pó">Pó</option><option value="Supositório">Supositório</option><option value="Creme">Creme</option><option value="Pomada">Pomada</option><option value="Spray">Spray</option><option value="Colírio">Colírio</option><option value="Solução Oral / Gotas">Solução Oral / Gotas</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Modo de Usar</label>
+          <input type="text" id="addUsage" required placeholder="Ex: Uso oral, Uso tópico, Uso oftálmico..." class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Posologia Resumida</label>
+          <input type="text" id="addPosology" required placeholder="Ex: Tomar 1 comprimido a cada 6 horas..." class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-bold text-gray-700 mb-1">Descrição / Indicação Breve</label>
+          <textarea id="addDescription" required rows="2" placeholder="Explique brevemente para que serve o medicamento..." class="w-full p-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm"></textarea>
+        </div>
+        <div class="flex items-center justify-between p-2 bg-gray-50 rounded-xl border">
+          <div>
+            <span class="block text-sm font-bold text-gray-700">Medicamento Controlado?</span>
+            <span class="text-xs text-gray-500">Ative se for tarja preta (Opioides, Anabolizantes, etc)</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="addIsControlled" class="sr-only peer">
+            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+          </label>
+        </div>
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-square-plus"></i> <span id="submitBtnText">Cadastrar Medicamento</span>
+        </button>
+        <button type="button" id="cancelEditBtn" onclick="resetFormState()" class="w-full bg-gray-300 text-gray-700 py-2 rounded-2xl font-bold hover:bg-gray-400 transition hidden text-sm">Cancelar Edição</button>
+      </form>
+    </div>
+    <div id="container-add-history" class="space-y-4 hidden">
+      <p class="text-sm text-gray-600">Aqui estão listados os medicamentos criados ou modificados por você nesta sessão.</p>
+      <div id="historyMedicineList" class="space-y-4"></div>
+    </div>
+  </main>
+
+    <main id="view-browser" class="app-view p-4 space-y-4 hidden">
+    <h2 class="text-xl font-bold text-blue-900">Navegador Acadêmico</h2>
+    <form onsubmit="doSearch(event)" class="space-y-2">
+      <div class="relative"><input id="brwQuery" placeholder="Pesquise um fármaco, doença, artigo..." class="w-full p-3 pr-12 rounded-2xl border border-gray-300 shadow-sm text-sm"><button class="absolute right-3 top-3 text-blue-600"><i class="fa-solid fa-magnifying-glass"></i></button></div>
+      <div id="engines" class="flex gap-2 overflow-x-auto pb-1"></div>
+    </form>
+    <h3 class="font-bold text-blue-800">Fontes para o curso</h3>
+    <div id="brwSites" class="grid grid-cols-2 gap-3"></div>
+    <h3 class="font-bold text-blue-800">Notícias da área</h3>
+    <div class="ie-frame">
+      <div class="ie-bar"><span class="ie-logo">e</span><div class="ie-addr"><i class="fa-solid fa-lock"></i>noticias.pharmacy-explore/saude</div><button class="ie-btn" onclick="loadNews()" title="Atualizar"><i class="fa-solid fa-rotate"></i></button></div>
+      <div id="newsList"></div>
+    </div>
+  </main>
+
+  <div id="detailsModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 relative shadow-2xl">
+      <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="flex items-center gap-3 border-b pb-4 mb-4">
+        <div id="modalIconContainer" class="bg-blue-100 text-blue-700 p-3 rounded-2xl text-xl"><i id="modalIcon" class="fa-solid fa-circle-info"></i></div>
+        <div>
+          <h3 id="modalMedName" class="text-2xl font-bold text-blue-900">Nome</h3>
+          <p id="modalMedCategory" class="text-sm font-semibold text-blue-500">Categoria</p>
+          <div id="modalControlledBadge" class="hidden mt-1 text-xs font-bold text-red-500 tracking-wider flex items-center gap-1 uppercase"><i class="fa-solid fa-triangle-exclamation"></i> Medicamento Controlado - Alto Risco</div>
+        </div>
+      </div>
+      <div class="space-y-4 text-sm text-gray-700">
+        <div>
+          <h4 id="modalLabelMg" class="font-bold text-blue-800 flex items-center gap-2 mb-1"><i class="fa-solid fa-layer-group"></i> Apresentações Comuns</h4>
+          <p id="modalMedMg" class="bg-gray-50 p-2 rounded-xl border border-gray-100">Informação</p>
+        </div>
+        <div>
+          <h4 id="modalLabelUsage" class="font-bold text-blue-800 flex items-center gap-2 mb-1"><i class="fa-solid fa-hand-holding-medical"></i> Modo de Usar</h4>
+          <p id="modalMedUsage" class="bg-gray-50 p-2 rounded-xl border border-gray-100">Informação</p>
+        </div>
+        <div>
+          <h4 id="modalLabelPosology" class="font-bold text-blue-800 flex items-center gap-2 mb-1"><i class="fa-solid fa-clock"></i> Posologia Resumida</h4>
+          <p id="modalMedPosology" class="bg-gray-50 p-2 rounded-xl border border-gray-100">Informação</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-emerald-700 flex items-center gap-2 mb-1"><i class="fa-solid fa-circle-check"></i> Para que serve</h4>
+          <p id="modalMedWhy" class="p-2 rounded-xl med-why"></p>
+        </div>
+        <div>
+          <h4 class="font-bold text-red-600 flex items-center gap-2 mb-1"><i class="fa-solid fa-triangle-exclamation"></i> Riscos e cuidados</h4>
+          <p id="modalMedRisk" class="p-2 rounded-xl med-risk"></p>
+        </div>
+        <p class="text-[11px] opacity-70">Conteúdo educativo para estudo. Consulte sempre a bula e um profissional de saúde.</p>
+      </div>
+      <button id="modalCloseBtn" onclick="closeModal()" class="mt-6 w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition">Fechar Janela</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMAÇÃO CUSTOMIZADO PARA DOWNLOAD -->
+  <div id="downloadSuccessModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl w-full max-w-sm p-6 relative shadow-2xl text-center space-y-4 border-2 border-blue-100">
+      <div class="mx-auto bg-blue-100 text-blue-700 w-16 h-16 rounded-2xl flex items-center justify-center text-3xl">
+        <i class="fa-solid fa-cloud-arrow-down animate-bounce"></i>
+      </div>
+      <div>
+        <h3 class="text-xl font-bold text-blue-900">Banco Atualizado!</h3>
+        <p id="downloadModalText" class="text-sm text-gray-600 mt-2">Novos medicamentos salvos localmente.</p>
+      </div>
+      <button onclick="closeDownloadModal()" class="w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition shadow shadow-blue-200">
+        Entendido
+      </button>
+    </div>
+  </div>
+
+  <nav id="global-nav" class="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t flex justify-around p-3 z-40 hidden">
+    <button id="nav-home" class="flex flex-col items-center text-gray-500 active-tab" onclick="switchTab('home')"><i class="fa-solid fa-house text-base"></i><span class="text-[10px] font-semibold mt-1">Home</span></button>
+    <button id="nav-categories" class="flex flex-col items-center text-gray-500" onclick="switchTab('categories')"><i class="fa-solid fa-layer-group text-base"></i><span class="text-[10px] font-semibold mt-1">Categorias</span></button>
+    <button id="nav-feed" class="flex flex-col items-center text-gray-500 relative" onclick="switchTab('feed')"><i class="fa-solid fa-bell text-base"></i><span id="feedBadge" class="hidden absolute -top-1 right-2 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold leading-4 text-center"></span><span class="text-[10px] font-semibold mt-1">Pharmaxy</span></button>
+    <button id="nav-prescriptions" class="flex flex-col items-center text-gray-500" onclick="switchTab('prescriptions')"><i class="fa-solid fa-file-medical text-base"></i><span class="text-[10px] font-semibold mt-1">Receitas</span></button>
+    <button id="nav-browser" class="flex flex-col items-center text-gray-500" onclick="switchTab('browser')"><i class="fa-solid fa-globe text-base"></i><span class="text-[10px] font-semibold mt-1">Navegador</span></button>
+    <button id="nav-info" class="flex flex-col items-center text-gray-500" onclick="switchTab('info')"><i class="fa-solid fa-circle-info text-base"></i><span class="text-[10px] font-semibold mt-1">Informações</span></button>
+    <button id="nav-add" class="flex flex-col items-center text-gray-500" onclick="switchTab('add')"><i class="fa-solid fa-circle-plus text-base"></i><span class="text-[10px] font-semibold mt-1">Acrescentar</span></button>
+  </nav>
+
+  <script>
+    const medicines = [
+      { id: 0, name: 'Dipirona', category: 'Analgésicos', description: 'Analgésico e antipirético amplamente utilizado para o alívio de dores gerais e febre.', mg: 'Comprimido - 500mg e 1g', usage: 'Uso oral.', posology: 'Adultos: 500mg a 1g a cada 6 horas. Não exceder 4g por dia.', isControlled: false },
+      { id: 23, name: 'Paracetamol', category: 'Analgésicos', description: 'Analgésico e antipirético padrão indicado para redução de dores leves a moderadas e controle térmico.', mg: 'Comprimido - 500mg e 750mg', usage: 'Uso oral.', posology: 'Adultos: 500mg a 1000mg a cada 4 a 6 horas. Cuidado com o limite hepático.', isControlled: false },
+      { id: 27, name: 'Ácido acetilsalicílico', category: 'Analgésicos', description: 'Analgésico tradicional que atua também como antipirético e inibidor da agregação plaquetária.', mg: 'Comprimido - 500mg', usage: 'Uso oral acompanhado de água.', posology: 'Adultos: 500mg a 1g a cada 4 ou 6 horas para fins analgésicos.', isControlled: false },
+      { id: 1, name: 'Ibuprofeno', category: 'Anti-inflamatório', description: 'Anti-inflamatório não esteroidal (AINE) usado para reduzir inflamações, dores de intensidade leve a moderada e febre.', mg: 'Comprimido - 200mg, 400mg e 600mg', usage: 'Uso oral, preferencialmente com alimentos.', posology: 'Adultos: 200mg a 600mg a cada 4 a 6 horas.', isControlled: false },
+      { id: 24, name: 'Cetoprofeno', category: 'Anti-inflamatório', description: 'Medicamento com propriedades anti-inflamatórias, analgésicas e antitérmicas de ação rápida.', mg: 'Comprimido - 100mg e 150mg', usage: 'Uso oral após as refeições principais.', posology: 'Adultos: 100mg a 200mg por dia, divididos em doses.', isControlled: false },
+      { id: 25, name: 'Naproxeno', category: 'Anti-inflamatório', description: 'AINE com potente ação anti-inflamatória e analgésica prolongada, ideal para dores musculares e articulares.', mg: 'Comprimido - 250mg e 500mg', usage: 'Uso oral líquido ou sólido.', posology: 'Adultos: 1 comprimido de 500mg a cada 12 horas ou conforme orientação.', isControlled: false },
+      { id: 26, name: 'Diclofenaco', category: 'Anti-inflamatório', description: 'Anti-inflamatório não esteroidal indicado para o tratamento de curto prazo de condições dolorosas agudas.', mg: 'Comprimido - 50mg', usage: 'Uso oral sem mastigar.', posology: 'Adultos: 100mg a 150mg por dia, fracionado em 2 ou 3 vezes.', isControlled: false },
+      { id: 1001, name: 'Nimesulida', category: 'Anti-inflamatório', description: 'Anti-inflamatório não esteroidal indicado para inflamações agudas, dores gerais e estados febris.', mg: 'Comprimido - 100mg', usage: 'Uso oral após as refeições.', posology: 'Adultos: 50mg a 100mg duas vezes ao dia. Uso máximo por 15 dias.', isControlled: false },
+      { id: 1002, name: 'Meloxicam', category: 'Anti-inflamatório', description: 'Anti-inflamatório com potente ação inibidora da COX-2, preferencial para o manejo de dores crônicas articulares e artrite.', mg: 'Comprimido - 7.5mg e 15mg', usage: 'Uso oral com água.', posology: 'Adultos: 7.5mg a 15mg em dose única diária.', isControlled: false },
+      { id: 1003, name: 'Piroxicam', category: 'Anti-inflamatório', description: 'AINE de meia-vida longa indicado para processos inflamatórios osteoarticulares agudos ou crônicos.', mg: 'Cápsula - 20mg', usage: 'Uso oral.', posology: 'Adultos: Geralmente 20mg uma vez ao dia.', isControlled: false },
+      { id: 1004, name: 'Etoricoxibe', category: 'Anti-inflamatório', description: 'Anti-inflamatório não esteroidal inibidor altamente seletivo da COX-2 para o tratamento de artrite e dores agudas.', mg: 'Comprimido - 60mg, 90mg e 120mg', usage: 'Uso oral independente das refeições.', posology: 'Adultos: 60mg a 120mg uma vez ao dia, dependendo da gravidade.', isControlled: false },
+      { id: 1005, name: 'Celecoxibe', category: 'Anti-inflamatório', description: 'Inibidor seletivo da COX-2 projetado para reduzir a dor e a inflamação com menor impacto na mucosa gástrica.', mg: 'Cápsula - 100mg e 200mg', usage: 'Uso oral.', posology: 'Adultos: 100mg a 200mg uma ou duas vezes ao dia.', isControlled: false },
+      { id: 1006, name: 'Tenoxicam', category: 'Anti-inflamatório', description: 'AINE com propriedades analgésicas e antitérmicas potentes, eficaz contra distúrbios musculoesqueléticos agudos.', mg: 'Comprimido - 20mg', usage: 'Uso oral inteiro com líquido.', posology: 'Adultos: 20mg uma vez ao dia no mesmo horário.', isControlled: false },
+      { id: 1007, name: 'Dexketoprofeno', category: 'Anti-inflamatório', description: 'Analgésico e anti-inflamatório de rápida absorção indicado para dores musculoesqueléticas, dismenorreia e dor de dente.', mg: 'Comprimido - 25mg', usage: 'Uso oral, preferencialmente 30 minutos antes das refeições.', posology: 'Adultos: 25mg a cada 8 horas, não excedendo 75mg por dia.', isControlled: false },
+      
+      { id: 50, name: 'Amoxicilina', category: 'Antibióticos', description: 'Antibiótico da classe das penicilinas indicado para o tratamento de diversas infecções bacterianas.', mg: 'Cápsula - 500mg', usage: 'Uso oral. Retenção de receita obrigatória.', posology: 'Adultos: 500mg a cada 8 horas ou 875mg a cada 12 horas.', isControlled: false },
+      { id: 51, name: 'Azitromicina', category: 'Antibióticos', description: 'Antibiótico macrolídeo utilizado no tratamento de infecções respiratórias, de pele e tecidos moles.', mg: 'Comprimido - 500mg', usage: 'Uso oral. Retenção de receita.', posology: 'Adultos: 500mg em dose única diária por 3 a 5 dias.', isControlled: false },
+      { id: 5001, name: 'Benzetacil', category: 'Antibióticos', description: 'Nome comercial da Penicilina Benzatina, amplamente conhecida por sua ação prolongada contra infecções estreptocócicas e sífilis.', mg: 'Ampola - Suspensão Injetável 1.200.000 UI', usage: 'Uso intramuscular profundo.', posology: 'Dose única conforme indicação e gravidade da infecção.', isControlled: false },
+      { id: 5002, name: 'Bepeben', category: 'Antibióticos', description: 'Alternativa comercial de Penicilina G Benzatina de liberação lenta para infecções respiratórias e profilaxia da febre reumática.', mg: 'Ampola - Injetável', usage: 'Uso intramuscular.', posology: 'Conforme prescrição médica e protocolo clínico estabelecido.', isControlled: false },
+      { id: 5003, name: 'Penicilina Benzatina', category: 'Antibióticos', description: 'Formulação padrão de Penicilina G de ação estendida (depósito), ideal para erradicação de bactérias sensíveis.', mg: 'Ampola - Injetável', usage: 'Uso intramuscular profundo exclusivo.', posology: 'Dose única ajustada por critério clínico ou de peso.', isControlled: false },
+      { id: 5004, name: 'Penicilina Procaína', category: 'Antibióticos', description: 'Penicilina de ação intermediária combinada com anestésico local para diminuir o desconforto na aplicação.', mg: 'Ampola - Injetável', usage: 'Uso intramuscular.', posology: 'Administração a cada 12 ou 24 horas conforme orientação do especialista.', isControlled: false },
+      { id: 5005, name: 'Penicilina Cristalina', category: 'Antibióticos', description: 'Penicilina G aquosa de ação rápida para administração intravenosa em infecções graves e hospitalares.', mg: 'Ampola - Injetável', usage: 'Uso intravenoso.', posology: 'Altas doses fracionadas a cada 4 ou 6 horas em ambiente hospitalar.', isControlled: false },
+      { id: 5006, name: 'Ampicilina', category: 'Antibióticos', description: 'Aminopenicilina de amplo espectro eficaz contra bactérias Gram-positivas e Gram-negativas.', mg: 'Comprimido / Cápsula - 500mg', usage: 'Uso oral, preferencialmente 1 hora antes ou 2 horas após as refeições.', posology: 'Adultos: 500mg a 1g a cada 6 horas.', isControlled: false },
+      { id: 5007, name: 'Ampicilina Sódica', category: 'Antibióticos', description: 'Forma salina solúvel de ampicilina adequada para administração injetável de ação rápida.', mg: 'Ampola - pó para solução injetável', usage: 'Uso intravenoso ou intramuscular.', posology: 'Conforme gravidade do quadro clínico hospitalar.', isControlled: false },
+      { id: 5008, name: 'Amoxicilina + Clavulanato', category: 'Antibióticos', description: 'Associação de amoxicilina com inibidor de beta-lactamase, ampliando o espectro contra cepas resistentes.', mg: 'Comprimido - 500mg + 125mg ou 875mg + 125mg', usage: 'Uso oral no início das refeições.', posology: 'Adultos: 1 comprimido a cada 8 ou 12 horas.', isControlled: false },
+      { id: 5009, name: 'Pen-Ve-Oral', category: 'Antibióticos', description: 'Nome comercial consagrado da Fenoximetilpenicilina para uso estrito por via oral.', mg: 'Comprimido - 500.000 UI', usage: 'Uso oral em jejum.', posology: 'Adultos: 1 comprimido a cada 6 ou 8 horas.', isControlled: false },
+      { id: 5010, name: 'Fenoximetilpenicilina', category: 'Antibióticos', description: 'Penicilina V estável no meio ácido estomacal, indicada para infecções leves a moderadas.', mg: 'Comprimido / Solução Oral', usage: 'Uso oral.', posology: 'Geralmente administrado a cada 6 horas por 7 a 10 dias.', isControlled: false },
+      { id: 5011, name: 'Dicloxacilina', category: 'Antibióticos', description: 'Penicilina isoxazólica resistente a penicilinases bacterianas, muito eficaz contra Staphylococcus.', mg: 'Cápsula - 250mg e 500mg', usage: 'Uso oral de estômago vazio.', posology: 'Adultos: 250mg a 500mg a cada 6 horas.', isControlled: false },
+      { id: 5012, name: 'Oxacilina', category: 'Antibióticos', description: 'Antibiótico de uso predominantemente hospitalar voltado para o combate a infecções estafilocócicas graves.', mg: 'Ampola - Injetável', usage: 'Uso intravenoso ou intramuscular.', posology: 'Doses elevadas individualizadas pelo infectologista.', isControlled: false },
+      { id: 5013, name: 'Cloxacilina', category: 'Antibióticos', description: 'Agente antimicrobiano semissintético resistente a enzimas beta-lactamases.', mg: 'Cápsula / Injetável', usage: 'Uso oral ou parenteral.', posology: 'Fracionamento padrão a cada 6 horas.', isControlled: false },
+      { id: 5014, name: 'Piperacilina', category: 'Antibióticos', description: 'Penicilina de espectro estendido antipseudomonas utilizada em infecções sistêmicas complexas.', mg: 'Ampola - pó injetável', usage: 'Uso intravenoso.', posology: 'Comumente associada ao tazobactam em infusões programadas.', isControlled: false },
+      { id: 5015, name: 'Ticarcilina', category: 'Antibióticos', description: 'Carboxipenicilina de uso injetável direcionada para patógenos Gram-negativos graves e multirresistentes.', mg: 'Ampola - Injetável', usage: 'Uso intravenoso.', posology: 'Uso e controle hospitalar restrito e monitorado.', isControlled: false },
+
+      { id: 60, name: 'Insulina NPH', category: 'Insulinas', description: 'Insulina de ação intermediária utilizada para o controle estável da glicemia basal em pacientes diabéticos.', mg: 'Suspensão Injetável - 100 UI/mL', usage: 'Uso subcutâneo.', posology: 'Dose estritamente individualizada e ajustada conforme monitoramento glicêmico.', isControlled: false },
+      { id: 61, name: 'Insulina Regular', category: 'Insulinas', description: 'Insulina de ação rápida indicada para o controle da glicemia pós-prandial ou em situações de emergência.', mg: 'Solução Injetável - 100 UI/mL', usage: 'Uso subcutâneo ou endovenoso.', posology: 'Administrada geralmente de 15 a 30 minutos antes das refeições principais.', isControlled: false },
+      { id: 62, name: 'Insulina Glargina', category: 'Insulinas', description: 'Insulina análoga de ação prolongada (basal), sem pico de ação, conferindo controle glicêmico por até 24 horas.', mg: 'Solução Injetável - 100 UI/mL', usage: 'Uso subcutâneo.', posology: 'Administrar uma vez por dia, sempre no mesmo horário.', isControlled: false },
+      { id: 63, name: 'Insulina Lispro', category: 'Insulinas', description: 'Insulina análoga de ação ultrarápida indicada para o controle imediato dos picos de glicose pós-refeição.', mg: 'Solução Injetável - 100 UI/mL', usage: 'Uso subcutâneo.', posology: 'Injetar imediatamente antes ou logo após as refeições.', isControlled: false },
+      { id: 70, name: 'Sertralina', category: 'Antidepressivos', description: 'Inibidor seletivo da recaptação de serotonina (ISRS) para depressão, ansiedade e transtorno do pânico.', mg: 'Comprimido - 50mg', usage: 'Uso oral. Medicamento com retenção de receita C1.', posology: 'Geralmente 50mg a 200mg uma vez ao dia pela manhã ou à noite.', isControlled: true },
+      { id: 71, name: 'Fluoxetina', category: 'Antidepressivos', description: 'Antidepressivo ISRS indicado para o tratamento da depressão, transtorno obsessivo-compulsivo e bulimia.', mg: 'Cápsula - 20mg', usage: 'Uso oral. Tarja vermelha sob controle especial.', posology: 'Adultos: Geralmente 20mg por dia pela manhã.', isControlled: true },
+      { id: 80, name: 'Risperidona', category: 'Antipsicóticos', description: 'Antipsicótico atípico indicado para o tratamento de esquizofrenia, mania aguda e irritabilidade associada ao autismo.', mg: 'Comprimido - 1mg, 2mg e 3mg', usage: 'Uso oral com controle rígido.', posology: 'Dose inicial de 1mg a 2mg por dia, ajustada conforme tolerância do paciente.', isControlled: true },
+      { id: 81, name: 'Haloperidol', category: 'Antipsicóticos', description: 'Antipsicótico típico potente indicado para o controle de delírios, alucinações e agitação psicomotora.', mg: 'Comprimido - 1mg e 5mg', usage: 'Uso oral ou injetável.', posology: 'Conforme rigorosa prescrição e ajuste individualizado do médico.', isControlled: true },
+      { id: 90, name: 'Metilfenidato', category: 'Psicoestimulantes', description: 'Estimulante do sistema nervoso central indicado para o tratamento do TDAH e narcolepsia.', mg: 'Comprimido - 100mg', usage: 'Uso oral. Tarja preta sob Notificação de Receita A (Amarela).', posology: 'Geralmente 10mg a 60mg por dia, fracionado antes das principais refeições.', isControlled: true },
+      { id: 95, name: 'Fenobarbital', category: 'Anticonvulsivantes', description: 'Barbitúrico com potente ação anticonvulsivante usado para prevenir e controlar crises epilépticas.', mg: 'Comprimido - 100mg', usage: 'Uso oral. Tarja preta sujeito a controle especial.', posology: 'Adultos: 100mg a 300mg ao dia, geralmente em dose única noturna.', isControlled: true },
+      { id: 96, name: 'Ácido Valproico', category: 'Anticonvulsivantes', description: 'Anticonvulsivante e estabilizador de humor indicado para crises epilépticas e episódios de mania.', mg: 'Comprimido - 250mg e 500mg', usage: 'Uso oral.', posology: 'Dose baseada no peso corporal e resposta clínica do paciente.', isControlled: true },
+      { id: 100, name: 'Omeprazol', category: 'Inibidores da Bomba de Prótons (IBP)', description: 'Reduz a produção de ácido no estômago. Indicado para refluxo gastroesofágico, gastrite, úlceras gástrica/duodenal, azia e proteção estomacal no uso de AINEs.', mg: 'Cápsula - 20mg e 40mg', usage: 'Uso oral. Deve ser tomado preferencialmente em jejum pela manhã.', posology: 'Geralmente 20mg a 40mg uma vez ao dia, cerca de 30 minutos antes do café da manhã.', isControlled: false },
+      { id: 101, name: 'Pantoprazol', category: 'Inibidores da Bomba de Prótons (IBP)', description: 'Medicamento da classe IBP que reduz a acidez gástrica, atuando no tratamento de gastrites, refluxos e prevenção de lesões na mucosa.', mg: 'Comprimido - 20mg e 40mg', usage: 'Uso oral. Ingerir inteiro com um pouco de líquido antes da refeição.', posology: 'Geralmente 20mg a 40mg uma vez ao dia, conforme orientação clínica.', isControlled: false },
+      { id: 102, name: 'Lansoprazol', category: 'Inibidores da Bomba de Prótons (IBP)', description: 'Inibidor da bomba de prótons utilizado para cicatrização de úlceras, esofagite por refluxo e controle do excesso de ácido gástrico.', mg: 'Cápsula - 15mg e 30mg', usage: 'Uso oral. Tomar pela manhã, em jejum.', posology: 'Geralmente 15mg a 30mg administrados uma vez ao dia.', isControlled: false },
+      { id: 103, name: 'Esomeprazol', category: 'Inibidores da Bomba de Prótons (IBP)', description: 'Isômero do omeprazol com alta eficácia na supressão ácida, indicado para o alívio rápido de azia, refluxo e tratamento de gastrites.', mg: 'Comprimido - 20mg e 40mg', usage: 'Uso oral. Pode ser ingerido com ou sem alimentos, de acordo com o plano terapêutico.', posology: 'Geralmente 20mg ou 40mg uma vez ao dia.', isControlled: false },
+      { id: 104, name: 'Rabeprazol', category: 'Inibidores da Bomba de Prótons (IBP)', description: 'Medicamento IBP de ação rápida no bloqueio da secreção ácida gástrica, usado no tratamento de refluxo erosivo e úlceras.', mg: 'Comprimido - 10mg e 20mg', usage: 'Uso oral. Não mastigar ou triturar os comprimidos.', posology: 'Geralmente 10mg a 20mg uma vez ao dia pela manhã.', isControlled: false },
+      { id: 200, name: 'Nifedipina', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido - 10mg, 20mg e 30mg', usage: 'Uso oral.', posology: 'Conforme estrita orientação médica para controle de pressão arterial e angina.', isControlled: false },
+      { id: 201, name: 'Anlodipino', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido - 5mg e 10mg', usage: 'Uso oral.', posology: 'Geralmente administrado uma vez ao dia, conforme orientação médica.', isControlled: false },
+      { id: 202, name: 'Verapamil', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido - 80mg e 120mg', usage: 'Uso oral.', posology: 'Dose ajustada individualmente pelo médico de acordo com a resposta terapêutica.', isControlled: false },
+      { id: 203, name: 'Diltiazem', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido - 30mg, 60mg e 90mg', usage: 'Uso oral.', posology: 'Uso sob prescrição médica, fracionado ao longo do dia.', isControlled: false },
+      { id: 204, name: 'Nicardipina', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Cápsula / Comprimido', usage: 'Uso oral ou injetável.', posology: 'Administração rigorosa baseada em parâmetros médicos cardiovasculares.', isControlled: false },
+      { id: 205, name: 'Isradipina', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido - 2,5mg e 5mg', usage: 'Uso oral.', posology: 'Posologia adaptada sob recomendação e controle clínico.', isControlled: false },
+      { id: 206, name: 'Lercanidipina', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido - 10mg e 20mg', usage: 'Uso oral.', posology: 'Geralmente 10mg uma vez ao dia, pelo menos 15 minutos antes da refeição.', isControlled: false },
+      { id: 207, name: 'Felodipina', category: 'Bloqueadores dos Canais de Cálcio', description: 'Bloqueador dos canais de cálcio usado para hipertensão, angina e alguns problemas cardíacos.', mg: 'Comprimido de Liberação Prolongada - 5mg e 10mg', usage: 'Uso oral.', posology: 'Administrar pela manhã, engolindo o comprimido inteiro com água.', isControlled: false },
+      { id: 300, name: 'Losartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 50mg e 100mg', usage: 'Uso oral.', posology: 'Usualmente de 50mg a 100mg uma vez ao dia, conforme orientação do cardiologista.', isControlled: false },
+      { id: 301, name: 'Valsartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 80mg, 160mg e 320mg', usage: 'Uso oral.', posology: 'Dose inicial típica de 80mg ou 160mg uma vez ao dia, adaptada clinicamente.', isControlled: false },
+      { id: 302, name: 'Olmesartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 20mg e 40mg', usage: 'Uso oral.', posology: 'Geralmente 20mg a 40mg uma vez ao dia, conforme prescrição.', isControlled: false },
+      { id: 303, name: 'Candesartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 8mg, 16mg e 32mg', usage: 'Uso oral.', posology: 'Administrado em dose única diária conforme metas de pressão do paciente.', isControlled: false },
+      { id: 304, name: 'Irbesartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 150mg e 300mg', usage: 'Uso oral.', posology: 'Dose padrão de 150mg a 300mg ao dia, sob supervisão profissional.', isControlled: false },
+      { id: 305, name: 'Telmisartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 40mg e 80mg', usage: 'Uso oral.', posology: 'Geralmente 40mg a 80mg uma vez ao dia para controle pressórico duradouro.', isControlled: false },
+      { id: 306, name: 'Eprosartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 400mg e 600mg', usage: 'Uso oral.', posology: 'Tomado diariamente seguindo estritamente as diretrizes da receita médica.', isControlled: false },
+      { id: 307, name: 'Azilsartana', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Muito usados para pressão alta e proteção cardiovascular/renal.', mg: 'Comprimido - 40mg e 80mg', usage: 'Uso oral.', posology: 'A dose recomendada é de 40mg uma vez ao dia, ajustável até 80mg pelo médico.', isControlled: false },
+      { id: 400, name: 'Gelol', category: 'Analgésicos Tópicos', description: 'Medicamento de ação local indicado para o tratamento de dores musculares, contusões e torcicolos.', mg: 'Gel / Pomada / Spray', usage: 'Uso tópico local.', posology: 'Massagear suavemente a região afetada de 2 a 3 vezes ao dia.', isControlled: false },
+      { id: 401, name: 'Cataflam Pro', category: 'Analgésicos Tópicos', description: 'Anti-inflamatório e analgésico tópico à base de diclofenaco dietilamônio, ideal para inflamações de tendões e articulações.', mg: 'Gel - 11,6mg/g', usage: 'Uso tópico na pele.', posology: 'Aplicar sobre a região dolorida de 3 a 4 vezes ao dia.', isControlled: false },
+      { id: 28, name: 'Tramadol', category: 'Opioides (analgésicos fortes)', description: 'Analgésico opioide potente indicado para dores de intensidade moderada a grave.', mg: 'Cápsula - 50mg', usage: 'Uso oral ou injetável sob estrita prescrição médica e retenção de receita.', posology: 'Adultos: 50mg a 100mg a cada 6 ou 8 horas. Risco de dependência física e psíquica.', isControlled: true },
+      { id: 29, name: 'Codeína', category: 'Opioides (analgésicos fortes)', description: 'Analgésico opioide derivado do ópio usado para dores moderadas e controle da tosse persistente.', mg: 'Comprimido - 30mg e 60mg', usage: 'Uso oral. Medicamento de tarja preta sujeito a controle rigoroso.', posology: 'Adultos: 30mg a 60mg a cada 4 ou 6 horas conforme plano médico.', isControlled: true },
+      { id: 30, name: 'Morfina', category: 'Opioides (analgésicos fortes)', description: 'Opioide analgésico de referência absoluta para o manejo de quadros dolorosos agudos ou crônicos intensos.', mg: 'Ampola - Solução injetável', usage: 'Uso oral ou parenteral com monitoramento profissional contínuo.', posology: 'Dosagem estritamente individualizada e acompanhada por equipe clínica.', isControlled: true },
+      { id: 37, name: 'Clonazepam', category: 'Benzodiazepínicos (calmantes/ansiolíticos)', description: 'Ansiolítico e anticonvulsivante indicado para transtornos de ansiedade, pânico e crises epilépticas.', mg: 'Comprimido - 0,5mg e 2mg', usage: 'Uso oral. Tarja preta com alto risco de tolerância e dependência crônica.', posology: 'Geralmente de 0,5mg a 4mg ao dia, divididos ou em dose única noturna.', isControlled: true },
+      { id: 38, name: 'Diazepam', category: 'Benzodiazepínicos (calmantes/ansiolíticos)', description: 'Sedativo, ansiolítico e relaxante muscular clássico de ação prolongada.', mg: 'Comprimido - 5mg e 10mg', usage: 'Uso oral ou endovenoso/intramuscular em emergências.', posology: 'Adultos: 5mg a 20mg diários, dependendo da gravidade e indicação.', isControlled: true },
+      { id: 501, name: 'Nafazolina + Zinco (Claril)', category: 'Oftálmico - Vasoconstritor', description: 'Descongestionante ocular que reduz a vermelhidão, irritações e o edema vascular provocado por alergias ou fatores externos.', mg: 'Colírio - Solução Oftálmica', usage: 'Uso oftálmico.', posology: 'Pingar de 1 a 2 gotas no olho afetado, até 4 vezes ao dia conforme necessidade.', isControlled: false },
+      { id: 502, name: 'Maleato de Timolol', category: 'Oftálmico - Glaucoma', description: 'Medicamento betabloqueador indicado para reduzir a pressão intraocular elevada no tratamento de glaucoma.', mg: 'Colírio - Solução Oftálmica 0,25% e 0,5%', usage: 'Uso oftálmico contínuo.', posology: 'Pingar 1 gota no olho afetado duas vezes ao dia (a cada 12 horas).', isControlled: false },
+      { id: 503, name: 'Carmelose Sódica (Fresh Tears)', category: 'Oftálmico - Lubrificante', description: 'Lágrima artificial ideal para o alívio e proteção contra o olho seco, ardência, irritação e fadiga ocular.', mg: 'Colírio - Solução Oftálmica 5mg/mL', usage: 'Uso oftálmico livre.', posology: 'Pingar 1 a 2 gotas nos olhos sempre que necessário para lubrificação.', isControlled: false },
+      { id: 20, name: 'Nebacetin', category: 'Pomadas e Cremes', description: 'Pomada antibiótica à base de neomicina e bacitracina para infecções cutâneas locais e pequenos ferimentos.', mg: 'Pomada - Sulfato de Neomicina', usage: 'Uso tópico dermatológico cutâneo.', posology: 'Aplicar uma fina camada sobre a pele de 2 a 5 vezes ao dia conforme a lesão.', isControlled: false },
+      { id: 74, name: 'Bepantol', category: 'Pomadas e Cremes', description: 'Pomada altamente hidratante e protetora rica em pró-vitamina B5, ideal para cicatrização e prevenção de assaduras.', mg: 'Pomada - Dexpantenol 50mg/g', usage: 'Uso dermatológico externo.', posology: 'Aplicar na área desejada ou a cada troca de fralda para proteção constante.', isControlled: false },
+      { id: 600, name: 'Trofilerm (Acetato de Clostebol + Neomicina)', category: 'Pomadas e Cremes', description: 'Creme cicatrizante e antibiótico com esteroide anabólico local, muito usado para feridas e úlceras cutâneas.', mg: 'Creme Dermatológico', usage: 'Uso tópico dermatológico.', posology: 'Aplicar uma fina camada sobre a área limpa de 1 a 2 vezes ao dia.', isControlled: false },
+      
+      { id: 700, name: 'Fluconazol', category: 'Antifúngico', description: 'Antifúngico sistêmico potente indicado para o tratamento de candidíase vaginal, micoses de unha e pele.', mg: 'Cápsula - 150mg', usage: 'Uso oral.', posology: 'Dose única de 150mg (para candidíase) ou semanal conforme prescrição para micose de unha.', isControlled: false },
+      { id: 701, name: 'Cetoconazol + Betametasona + Neomicina', category: 'Antifúngico', description: 'Pomada tripla com ação antifúngica, anti-inflamatória e antibacteriana para infecções de pele complexas.', mg: 'Pomada / Creme', usage: 'Uso dermatológico tópico.', posology: 'Aplicar uma fina camada sobre o local afetado uma vez ao dia.', isControlled: false },
+      
+      { id: 3001, name: 'Ciclo 21', category: 'Anticoncepcional', description: 'Contraceptivo oral combinado de baixa dosagem hormonal para prevenção de gravidez.', mg: 'Comprimido - 0,15mg + 0,03mg', usage: 'Uso oral.', posology: 'Tomar 1 comprimido diariamente no mesmo horário por 21 dias, seguido de pausa de 7 dias.', isControlled: false },
+      { id: 3002, name: 'Microvlar', category: 'Anticoncepcional', description: 'Anticoncepcional oral indicado para a prevenção da concepção e controle de irregularidades menstruais.', mg: 'Comprimido - Drágea', usage: 'Uso oral diário contínuo.', posology: '1 drágea ao dia sempre no mesmo horário por 21 dias sequenciais.', isControlled: false },
+      { id: 3003, name: 'Nordette', category: 'Anticoncepcional', description: 'Pílula anticoncepcional combinada que atua impedindo a ovulação e alterando o muco cervical.', mg: 'Comprimido', usage: 'Uso oral.', posology: 'Tomar diariamente por 21 dias seguidos por intervalo de uma semana antes da próxima cartela.', isControlled: false },
+      { id: 3004, name: 'Levogestrel + Etinilestradiol genérico', category: 'Anticoncepcional', description: 'Formulação genérica do contraceptivo hormonal oral combinado amplamente distribuído.', mg: 'Comprimido - 0,15mg + 0,03mg', usage: 'Uso oral regrado.', posology: 'Iniciou no 1º dia da menstruação, tomar um por dia até o término da cartela.', isControlled: false },
+      { id: 3005, name: 'Micronor (minipílula)', category: 'Anticoncepcional', description: 'Contraceptivo oral composto apenas por progestogênio, muito indicado durante o período de amamentação.', mg: 'Comprimido - 0,35mg', usage: 'Uso oral contínuo sem pausas.', posology: 'Tomar 1 comprimido todos os dias, rigorosamente no mesmo horário, inclusive durante a menstruação.', isControlled: false },
+      { id: 3006, name: 'Mesigyna (injeção mensal)', category: 'Anticoncepcional', description: 'Contraceptivo injetável mensal combinado à base de enantato de noretesterona e valerato de estradiol.', mg: 'Ampola - Solução Injetável 1mL', usage: 'Uso intramuscular profundo.', posology: 'Aplicar uma injeção mensal a cada 30 dias (margem de tolerância estrita).', isControlled: false },
+      { id: 3007, name: 'Depo-Provera (injeção trimestral)', category: 'Anticoncepcional', description: 'Contraceptivo injetável trimestral de progestogênio isolado de longa duração.', mg: 'Ampola / Frasco - Suspensão Injetável 150mg/mL', usage: 'Uso intramuscular.', posology: 'Uma aplicação a cada 3 meses (12 semanas) com rigoroso acompanhamento de datas.', isControlled: false },
+
+      { id: 4001, name: 'Vitamina C', category: 'Vitaminas', description: 'Ácido ascórbico com potente ação antioxidante, auxiliar no sistema imunológico e na absorção de ferro.', mg: 'Comprimido Efervescente / Gotas - 1g ou 500mg', usage: 'Uso oral dissolvido em água.', posology: 'Geralmente 1g uma vez ao dia ou conforme necessidade metabólica.', isControlled: false },
+      { id: 4002, name: 'Vitamina D', category: 'Vitaminas', description: 'Colecalciferol essencial para a regulação do cálcio no sangue, saúde óssea e integridade imune.', mg: 'Cápsula / Gotas - 1.000 UI a 50.000 UI', usage: 'Uso oral.', posology: 'Posologia semanal ou diária dependendo do nível de deficiência diagnosticado.', isControlled: false },
+      { id: 4003, name: 'Complexo B', category: 'Vitaminas', description: 'Mix de vitaminas essenciais (B1, B2, B3, B5, B6, B12) fundamentais para o metabolismo energético e sistema nervoso.', mg: 'Comprimido / Drágea', usage: 'Uso oral.', posology: '1 a 2 drágeas ao dia ou conforme prescrição.', isControlled: false },
+      { id: 4004, name: 'Ômega 3', category: 'Vitaminas', description: 'Ácidos graxos essenciais extraídos de óleo de peixe que auxiliam na manutenção de níveis saudáveis de triglicerídeos.', mg: 'Cápsula Gelatinosa - 1000mg', usage: 'Uso oral durante as principais refeições.', posology: 'Tomar 1 a 3 cápsulas ao dia.', isControlled: false },
+      { id: 4005, name: 'Multivitamínicos', category: 'Vitaminas', description: 'Suplementos completos projetados para suprir carências de micronutrientes do dia a dia.', mg: 'Comprimido / Cápsula', usage: 'Uso oral diário.', posology: 'Geralmente 1 comprimido ao dia junto à refeição.', isControlled: false },
+      { id: 4006, name: 'Ferro', category: 'Vitaminas', description: 'Suplementação mineral ferrosa indispensável para a síntese de hemoglobina e tratamento de anemias.', mg: 'Comprimido / Solução Oral - Sulfato Ferroso', usage: 'Uso oral, idealmente 1 hora antes das refeições para melhor absorção.', posology: 'Dose profilática ou terapêutica variável conforme exames laboratoriais.', isControlled: false },
+      { id: 4007, name: 'Cálcio + Vitamina D', category: 'Vitaminas', description: 'Combinação sinérgica indicada para prevenção e tratamento da osteoporose e fortalecimento da matriz óssea.', mg: 'Comprimido - 500mg + 400 UI', usage: 'Uso oral diário.', posology: '1 a 2 comprimidos ao dia administrados preferencialmente à noite.', isControlled: false },
+      { id: 4008, name: 'Zinco', category: 'Vitaminas', description: 'Mineral quelato vital para o funcionamento enzimático celular, cicatrização e defesa imunológica.', mg: 'Comprimido - 7mg a 30mg', usage: 'Uso oral.', posology: '1 comprimido ao dia ou sob recomendação nutricional.', isControlled: false },
+      { id: 4009, name: 'Biotina', category: 'Vitaminas', description: 'Vitamina B7 com atuação direta na síntese de queratina, recomendada para fortalecimento de unhas e cabelos.', mg: 'Cápsula - 5mg a 10mg', usage: 'Uso oral.', posology: 'Tomar 1 cápsula ao dia.', isControlled: false },
+      { id: 4010, name: 'Polivitamínicos infantis', category: 'Vitaminas', description: 'Formulações adaptadas em xarope ou gomas balanceadas para o crescimento e imunidade das crianças.', mg: 'Xarope / Solução Oral', usage: 'Uso oral infantil.', posology: 'Dosagem volumétrica (mL) calculada com base na idade ou peso da criança.', isControlled: false }
+    ];
+
+    (function(){ const novos=[{"name": "Dorflex (Dipirona+Orfenadrina+Cafeína)", "category": "Analgésicos", "description": "Dor muscular e cefaleia tensional.", "mg": "Comprimido 300/35/50mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1000}, {"name": "Neosaldina (Dipirona+Isometepteno+Cafeína)", "category": "Analgésicos", "description": "Enxaqueca e cefaleia.", "mg": "Drágea / Gotas", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1001}, {"name": "Buscopan Composto (Butilescopolamina+Dipirona)", "category": "Analgésicos", "description": "Cólicas abdominais e menstruais.", "mg": "Comprimido 10/250mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1002}, {"name": "Paracetamol + Cafeína", "category": "Analgésicos", "description": "Dor de cabeça e dores leves.", "mg": "Comprimido 500/65mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1003}, {"name": "Prednisona", "category": "Anti-inflamatório", "description": "Corticoide: inflamações, alergias e doenças autoimunes.", "mg": "Comprimido 5mg/20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1004}, {"name": "Prednisolona", "category": "Anti-inflamatório", "description": "Corticoide: asma, alergias e inflamações.", "mg": "Solução oral / Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1005}, {"name": "Dexametasona", "category": "Anti-inflamatório", "description": "Corticoide: inflamação intensa e edema.", "mg": "Comprimido 4mg / Ampola", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1006}, {"name": "Betametasona", "category": "Anti-inflamatório", "description": "Corticoide: inflamação e alergias.", "mg": "Ampola / Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1007}, {"name": "Cetorolaco", "category": "Anti-inflamatório", "description": "Dor aguda moderada a intensa.", "mg": "Comprimido 10mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1008}, {"name": "Indometacina", "category": "Anti-inflamatório", "description": "Artrite, gota e dor inflamatória.", "mg": "Cápsula 25mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1009}, {"name": "Nabumetona", "category": "Anti-inflamatório", "description": "Osteoartrite e artrite reumatoide.", "mg": "Comprimido 500mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1010}, {"name": "Aceclofenaco", "category": "Anti-inflamatório", "description": "Dor e inflamação osteomuscular.", "mg": "Comprimido 100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1011}, {"name": "Lornoxicam", "category": "Anti-inflamatório", "description": "Dor e inflamação.", "mg": "Comprimido 8mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1012}, {"name": "Cefalexina", "category": "Antibióticos", "description": "Infecções de pele e vias urinárias.", "mg": "Cápsula 500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1013}, {"name": "Cefadroxila", "category": "Antibióticos", "description": "Infecções de pele e garganta.", "mg": "Cápsula 500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1014}, {"name": "Cefuroxima", "category": "Antibióticos", "description": "Sinusite, bronquite e infecção urinária.", "mg": "Comprimido 250/500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1015}, {"name": "Ceftriaxona", "category": "Antibióticos", "description": "Infecções graves (uso injetável).", "mg": "Ampola 1g", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1016}, {"name": "Cefazolina", "category": "Antibióticos", "description": "Profilaxia cirúrgica e infecções de pele.", "mg": "Ampola 1g", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1017}, {"name": "Ciprofloxacino", "category": "Antibióticos", "description": "Infecção urinária e gastrointestinal.", "mg": "Comprimido 500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1018}, {"name": "Levofloxacino", "category": "Antibióticos", "description": "Pneumonia e sinusite.", "mg": "Comprimido 500/750mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1019}, {"name": "Norfloxacino", "category": "Antibióticos", "description": "Infecção urinária.", "mg": "Comprimido 400mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1020}, {"name": "Claritromicina", "category": "Antibióticos", "description": "Infecções respiratórias.", "mg": "Comprimido 500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1021}, {"name": "Eritromicina", "category": "Antibióticos", "description": "Alternativa em alergia a penicilinas.", "mg": "Comprimido 500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1022}, {"name": "Sulfametoxazol + Trimetoprima", "category": "Antibióticos", "description": "Infecção urinária.", "mg": "Comprimido 400/80mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1023}, {"name": "Metronidazol", "category": "Antibióticos", "description": "Infecções por anaeróbios e protozoários.", "mg": "Comprimido 250/400mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1024}, {"name": "Doxiciclina", "category": "Antibióticos", "description": "Acne, infecções respiratórias e DSTs.", "mg": "Comprimido 100mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1025}, {"name": "Clindamicina", "category": "Antibióticos", "description": "Infecções ósseas, dentárias e de pele.", "mg": "Cápsula 300mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1026}, {"name": "Gentamicina", "category": "Antibióticos", "description": "Infecções graves por Gram-negativos.", "mg": "Ampola", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1027}, {"name": "Amicacina", "category": "Antibióticos", "description": "Infecções hospitalares graves.", "mg": "Ampola", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1028}, {"name": "Nitrofurantoína", "category": "Antibióticos", "description": "Infecção urinária não complicada.", "mg": "Cápsula 100mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1029}, {"name": "Vancomicina", "category": "Antibióticos", "description": "Infecções por Gram-positivos resistentes (MRSA).", "mg": "Frasco-ampola 500mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1030}, {"name": "Meropenem", "category": "Antibióticos", "description": "Infecções hospitalares graves.", "mg": "Frasco-ampola 1g", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1031}, {"name": "Linezolida", "category": "Antibióticos", "description": "Infecções por bactérias resistentes.", "mg": "Comprimido 600mg", "usage": "Uso oral ou injetável conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1032}, {"name": "Insulina Aspart", "category": "Insulinas", "description": "Ação rápida: controle da glicemia pós-refeição.", "mg": "Caneta / Frasco 100UI/mL", "usage": "Uso subcutâneo.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1033}, {"name": "Insulina Glulisina", "category": "Insulinas", "description": "Ação rápida.", "mg": "Caneta 100UI/mL", "usage": "Uso subcutâneo.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1034}, {"name": "Insulina Detemir", "category": "Insulinas", "description": "Ação prolongada (basal).", "mg": "Caneta 100UI/mL", "usage": "Uso subcutâneo.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1035}, {"name": "Insulina Degludeca", "category": "Insulinas", "description": "Ação ultraprolongada (basal).", "mg": "Caneta 100UI/mL", "usage": "Uso subcutâneo.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1036}, {"name": "Insulina NPH + Regular 70/30", "category": "Insulinas", "description": "Insulina pré-misturada.", "mg": "Caneta / Frasco", "usage": "Uso subcutâneo.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1037}, {"name": "Amitriptilina", "category": "Antidepressivos", "description": "Depressão, dor neuropática e profilaxia de enxaqueca.", "mg": "Comprimido 25mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1038}, {"name": "Nortriptilina", "category": "Antidepressivos", "description": "Depressão e dor crônica.", "mg": "Cápsula 25mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1039}, {"name": "Clomipramina", "category": "Antidepressivos", "description": "Depressão e TOC.", "mg": "Comprimido 25mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1040}, {"name": "Escitalopram", "category": "Antidepressivos", "description": "Depressão e ansiedade.", "mg": "Comprimido 10/20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1041}, {"name": "Citalopram", "category": "Antidepressivos", "description": "Depressão e pânico.", "mg": "Comprimido 20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1042}, {"name": "Paroxetina", "category": "Antidepressivos", "description": "Depressão, pânico e TOC.", "mg": "Comprimido 20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1043}, {"name": "Fluvoxamina", "category": "Antidepressivos", "description": "TOC e depressão.", "mg": "Comprimido 100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1044}, {"name": "Venlafaxina", "category": "Antidepressivos", "description": "Depressão e ansiedade generalizada.", "mg": "Cápsula 75/150mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1045}, {"name": "Desvenlafaxina", "category": "Antidepressivos", "description": "Depressão.", "mg": "Comprimido 50mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1046}, {"name": "Duloxetina", "category": "Antidepressivos", "description": "Depressão, ansiedade e dor neuropática.", "mg": "Cápsula 30/60mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1047}, {"name": "Bupropiona", "category": "Antidepressivos", "description": "Depressão e cessação do tabagismo.", "mg": "Comprimido 150mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1048}, {"name": "Mirtazapina", "category": "Antidepressivos", "description": "Depressão com insônia.", "mg": "Comprimido 15/30mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1049}, {"name": "Trazodona", "category": "Antidepressivos", "description": "Depressão e insônia.", "mg": "Comprimido 50/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1050}, {"name": "Olanzapina", "category": "Antipsicóticos", "description": "Esquizofrenia e transtorno bipolar.", "mg": "Comprimido 5/10mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1051}, {"name": "Quetiapina", "category": "Antipsicóticos", "description": "Esquizofrenia, bipolar e depressão.", "mg": "Comprimido 25/100/200mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1052}, {"name": "Clozapina", "category": "Antipsicóticos", "description": "Esquizofrenia refratária.", "mg": "Comprimido 25/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1053}, {"name": "Aripiprazol", "category": "Antipsicóticos", "description": "Esquizofrenia e bipolar.", "mg": "Comprimido 10/15mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1054}, {"name": "Ziprasidona", "category": "Antipsicóticos", "description": "Esquizofrenia.", "mg": "Cápsula 40/80mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1055}, {"name": "Paliperidona", "category": "Antipsicóticos", "description": "Esquizofrenia.", "mg": "Comprimido 3/6mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1056}, {"name": "Clorpromazina", "category": "Antipsicóticos", "description": "Psicoses e agitação.", "mg": "Comprimido 25/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1057}, {"name": "Levomepromazina", "category": "Antipsicóticos", "description": "Psicoses, sedação e insônia.", "mg": "Comprimido 25/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1058}, {"name": "Lisdexanfetamina", "category": "Psicoestimulantes", "description": "TDAH e compulsão alimentar.", "mg": "Cápsula 30/50/70mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1059}, {"name": "Metilfenidato de liberação prolongada", "category": "Psicoestimulantes", "description": "TDAH.", "mg": "Comprimido / Cápsula", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1060}, {"name": "Modafinila", "category": "Psicoestimulantes", "description": "Narcolepsia e sonolência excessiva.", "mg": "Comprimido 100/200mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1061}, {"name": "Carbamazepina", "category": "Anticonvulsivantes", "description": "Epilepsia e neuralgia do trigêmeo.", "mg": "Comprimido 200/400mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1062}, {"name": "Fenitoína", "category": "Anticonvulsivantes", "description": "Epilepsia.", "mg": "Comprimido 100mg / Ampola", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1063}, {"name": "Lamotrigina", "category": "Anticonvulsivantes", "description": "Epilepsia e bipolar.", "mg": "Comprimido 25/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1064}, {"name": "Topiramato", "category": "Anticonvulsivantes", "description": "Epilepsia e profilaxia de enxaqueca.", "mg": "Comprimido 25/50/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1065}, {"name": "Oxcarbazepina", "category": "Anticonvulsivantes", "description": "Epilepsia focal.", "mg": "Comprimido 300/600mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1066}, {"name": "Levetiracetam", "category": "Anticonvulsivantes", "description": "Epilepsia.", "mg": "Comprimido 500/750mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1067}, {"name": "Gabapentina", "category": "Anticonvulsivantes", "description": "Epilepsia e dor neuropática.", "mg": "Cápsula 300/400mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1068}, {"name": "Pregabalina", "category": "Anticonvulsivantes", "description": "Dor neuropática e fibromialgia.", "mg": "Cápsula 75/150mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1069}, {"name": "Primidona", "category": "Anticonvulsivantes", "description": "Epilepsia e tremor essencial.", "mg": "Comprimido 100/250mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1070}, {"name": "Lacosamida", "category": "Anticonvulsivantes", "description": "Epilepsia focal.", "mg": "Comprimido 50/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1071}, {"name": "Dexlansoprazol", "category": "Inibidores da Bomba de Prótons (IBP)", "description": "Refluxo e esofagite erosiva.", "mg": "Cápsula 30/60mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1072}, {"name": "Nimodipino", "category": "Bloqueadores dos Canais de Cálcio", "description": "Prevenção de vasoespasmo pós-hemorragia subaracnoide.", "mg": "Comprimido 30mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1073}, {"name": "Lacidipino", "category": "Bloqueadores dos Canais de Cálcio", "description": "Hipertensão.", "mg": "Comprimido 4mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1074}, {"name": "Levanlodipino", "category": "Bloqueadores dos Canais de Cálcio", "description": "Hipertensão e angina.", "mg": "Comprimido 2,5/5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1075}, {"name": "Manidipino", "category": "Bloqueadores dos Canais de Cálcio", "description": "Hipertensão.", "mg": "Comprimido 10/20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1076}, {"name": "Losartana + Hidroclorotiazida", "category": "Bloqueadores dos Receptores de Angiotensina II (BRA)", "description": "Hipertensão (associação).", "mg": "Comprimido 50/12,5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1077}, {"name": "Valsartana + Hidroclorotiazida", "category": "Bloqueadores dos Receptores de Angiotensina II (BRA)", "description": "Hipertensão (associação).", "mg": "Comprimido 160/12,5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1078}, {"name": "Olmesartana + Anlodipino", "category": "Bloqueadores dos Receptores de Angiotensina II (BRA)", "description": "Hipertensão (associação).", "mg": "Comprimido 20/5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1079}, {"name": "Telmisartana + Anlodipino", "category": "Bloqueadores dos Receptores de Angiotensina II (BRA)", "description": "Hipertensão (associação).", "mg": "Comprimido 40/5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1080}, {"name": "Diclofenaco Dietilamônio gel (Voltaren Emulgel)", "category": "Analgésicos Tópicos", "description": "Dor muscular e articular local.", "mg": "Gel 11,6mg/g", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1081}, {"name": "Cetoprofeno gel", "category": "Analgésicos Tópicos", "description": "Contusões, entorses e dor local.", "mg": "Gel 25mg/g", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1082}, {"name": "Salonpas", "category": "Analgésicos Tópicos", "description": "Dor muscular e lombalgia.", "mg": "Adesivo transdérmico", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1083}, {"name": "Lidocaína", "category": "Analgésicos Tópicos", "description": "Anestesia tópica.", "mg": "Gel 2% / Spray 10%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1084}, {"name": "Capsaicina", "category": "Analgésicos Tópicos", "description": "Dor neuropática e osteoartrite.", "mg": "Creme 0,075%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1085}, {"name": "Mentol + Salicilato de Metila", "category": "Analgésicos Tópicos", "description": "Dores musculares leves.", "mg": "Pomada / Spray", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1086}, {"name": "Codeína + Paracetamol (Tylex)", "category": "Opioides (analgésicos fortes)", "description": "Dor moderada.", "mg": "Comprimido 30/500mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1087}, {"name": "Oxicodona", "category": "Opioides (analgésicos fortes)", "description": "Dor intensa.", "mg": "Comprimido 10/20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1088}, {"name": "Metadona", "category": "Opioides (analgésicos fortes)", "description": "Dor crônica e dependência de opioides.", "mg": "Comprimido 5/10mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1089}, {"name": "Fentanila", "category": "Opioides (analgésicos fortes)", "description": "Dor crônica intensa.", "mg": "Adesivo transdérmico", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1090}, {"name": "Buprenorfina", "category": "Opioides (analgésicos fortes)", "description": "Dor crônica e dependência de opioides.", "mg": "Adesivo / Sublingual", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1091}, {"name": "Tapentadol", "category": "Opioides (analgésicos fortes)", "description": "Dor moderada a intensa.", "mg": "Comprimido 50/100mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1092}, {"name": "Petidina", "category": "Opioides (analgésicos fortes)", "description": "Dor aguda intensa (uso hospitalar).", "mg": "Ampola", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1093}, {"name": "Alprazolam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Ansiedade e pânico.", "mg": "Comprimido 0,25/0,5/1mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1094}, {"name": "Bromazepam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Ansiedade.", "mg": "Comprimido 3/6mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1095}, {"name": "Lorazepam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Ansiedade e insônia.", "mg": "Comprimido 1/2mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1096}, {"name": "Clobazam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Epilepsia adjuvante e ansiedade.", "mg": "Comprimido 10/20mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1097}, {"name": "Cloxazolam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Ansiedade.", "mg": "Comprimido 1/2mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1098}, {"name": "Midazolam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Sedação e insônia.", "mg": "Comprimido 7,5/15mg / Ampola", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1099}, {"name": "Nitrazepam", "category": "Benzodiazepínicos (calmantes/ansiolíticos)", "description": "Insônia.", "mg": "Comprimido 5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1100}, {"name": "Zopiclona", "category": "Hipnóticos / medicamentos para dormir", "description": "Insônia.", "mg": "Comprimido 7,5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1101}, {"name": "Eszopiclona", "category": "Hipnóticos / medicamentos para dormir", "description": "Insônia.", "mg": "Comprimido 2/3mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1102}, {"name": "Triazolam", "category": "Hipnóticos / medicamentos para dormir", "description": "Insônia de curta duração.", "mg": "Comprimido 0,25mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1103}, {"name": "Testosterona (Cipionato/Enantato)", "category": "Anabolizantes", "description": "Reposição hormonal no hipogonadismo.", "mg": "Ampola 250mg/mL", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1104}, {"name": "Oxandrolona", "category": "Anabolizantes", "description": "Ganho de peso em estados catabólicos.", "mg": "Comprimido 2,5/10mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1105}, {"name": "Nandrolona", "category": "Anabolizantes", "description": "Anemias e osteoporose (uso médico).", "mg": "Ampola 50mg/mL", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1106}, {"name": "Estanozolol", "category": "Anabolizantes", "description": "Angioedema hereditário (uso médico).", "mg": "Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1107}, {"name": "Mesterolona", "category": "Anabolizantes", "description": "Hipogonadismo masculino.", "mg": "Comprimido 25mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": true, "id": 1108}, {"name": "Hialuronato de Sódio", "category": "Oftálmico - Lubrificante", "description": "Olho seco.", "mg": "Colírio 0,15–0,4%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1109}, {"name": "Hipromelose", "category": "Oftálmico - Lubrificante", "description": "Lubrificação ocular.", "mg": "Colírio 0,3–0,5%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1110}, {"name": "Polietilenoglicol + Propilenoglicol (Systane)", "category": "Oftálmico - Lubrificante", "description": "Olho seco e irritação.", "mg": "Colírio", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1111}, {"name": "Carbômer", "category": "Oftálmico - Lubrificante", "description": "Olho seco moderado a grave.", "mg": "Gel oftálmico", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1112}, {"name": "Cetotifeno", "category": "Oftálmico - Antialérgico", "description": "Conjuntivite alérgica.", "mg": "Colírio 0,025%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1113}, {"name": "Olopatadina", "category": "Oftálmico - Antialérgico", "description": "Conjuntivite alérgica.", "mg": "Colírio 0,1–0,2%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1114}, {"name": "Cromoglicato Dissódico", "category": "Oftálmico - Antialérgico", "description": "Prevenção de alergia ocular.", "mg": "Colírio 2%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1115}, {"name": "Azelastina", "category": "Oftálmico - Antialérgico", "description": "Conjuntivite alérgica.", "mg": "Colírio 0,05%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1116}, {"name": "Epinastina", "category": "Oftálmico - Antialérgico", "description": "Conjuntivite alérgica.", "mg": "Colírio 0,05%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1117}, {"name": "Tobramicina", "category": "Oftálmico - Antibiótico", "description": "Conjuntivite bacteriana.", "mg": "Colírio / Pomada 0,3%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1118}, {"name": "Ciprofloxacino", "category": "Oftálmico - Antibiótico", "description": "Conjuntivite e úlcera de córnea.", "mg": "Colírio 0,3%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1119}, {"name": "Moxifloxacino", "category": "Oftálmico - Antibiótico", "description": "Conjuntivite bacteriana.", "mg": "Colírio 0,5%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1120}, {"name": "Cloranfenicol", "category": "Oftálmico - Antibiótico", "description": "Conjuntivite bacteriana.", "mg": "Colírio / Pomada", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1121}, {"name": "Ofloxacino", "category": "Oftálmico - Antibiótico", "description": "Infecções oculares externas.", "mg": "Colírio 0,3%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1122}, {"name": "Tobramicina + Dexametasona (Tobradex)", "category": "Oftálmico - Antibiótico", "description": "Infecção ocular com inflamação.", "mg": "Colírio / Pomada", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1123}, {"name": "Latanoprosta", "category": "Oftálmico - Glaucoma", "description": "Glaucoma e hipertensão ocular.", "mg": "Colírio 0,005%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1124}, {"name": "Travoprosta", "category": "Oftálmico - Glaucoma", "description": "Glaucoma.", "mg": "Colírio 0,004%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1125}, {"name": "Bimatoprosta", "category": "Oftálmico - Glaucoma", "description": "Glaucoma.", "mg": "Colírio 0,03%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1126}, {"name": "Dorzolamida", "category": "Oftálmico - Glaucoma", "description": "Glaucoma.", "mg": "Colírio 2%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1127}, {"name": "Brinzolamida", "category": "Oftálmico - Glaucoma", "description": "Glaucoma.", "mg": "Colírio 1%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1128}, {"name": "Brimonidina", "category": "Oftálmico - Glaucoma", "description": "Glaucoma.", "mg": "Colírio 0,2%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1129}, {"name": "Dorzolamida + Timolol", "category": "Oftálmico - Glaucoma", "description": "Glaucoma (associação).", "mg": "Colírio", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1130}, {"name": "Tetrahidrozolina (Visine)", "category": "Oftálmico - Vasoconstritor", "description": "Alívio da vermelhidão ocular.", "mg": "Colírio 0,05%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1131}, {"name": "Oximetazolina", "category": "Oftálmico - Vasoconstritor", "description": "Vermelhidão ocular.", "mg": "Colírio 0,025%", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1132}, {"name": "Fenilefrina", "category": "Oftálmico - Vasoconstritor", "description": "Hiperemia ocular.", "mg": "Colírio", "usage": "Uso oftálmico (tópico ocular).", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1133}, {"name": "Dexametasona creme", "category": "Pomadas e Cremes", "description": "Dermatites e eczemas.", "mg": "Creme 0,1%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1134}, {"name": "Hidrocortisona", "category": "Pomadas e Cremes", "description": "Dermatites leves.", "mg": "Creme 1%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1135}, {"name": "Betametasona", "category": "Pomadas e Cremes", "description": "Dermatites e psoríase.", "mg": "Creme 0,05%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1136}, {"name": "Clobetasol", "category": "Pomadas e Cremes", "description": "Dermatoses graves.", "mg": "Creme / Pomada 0,05%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1137}, {"name": "Mupirocina", "category": "Pomadas e Cremes", "description": "Impetigo e infecções de pele.", "mg": "Pomada 2%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1138}, {"name": "Sulfadiazina de Prata", "category": "Pomadas e Cremes", "description": "Queimaduras.", "mg": "Creme 1%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1139}, {"name": "Óxido de Zinco + Vitaminas A e D (Hipoglós)", "category": "Pomadas e Cremes", "description": "Assaduras.", "mg": "Pomada", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1140}, {"name": "Colagenase (Iruxol)", "category": "Pomadas e Cremes", "description": "Desbridamento de feridas.", "mg": "Pomada", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1141}, {"name": "Aciclovir", "category": "Pomadas e Cremes", "description": "Herpes labial.", "mg": "Creme 5%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1142}, {"name": "Ácido Fusídico", "category": "Pomadas e Cremes", "description": "Infecções bacterianas de pele.", "mg": "Creme / Pomada 2%", "usage": "Uso tópico.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1143}, {"name": "Itraconazol", "category": "Antifúngico", "description": "Micoses de unha e sistêmicas.", "mg": "Cápsula 100mg", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1144}, {"name": "Terbinafina", "category": "Antifúngico", "description": "Micose de unha e pele.", "mg": "Comprimido 250mg / Creme", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1145}, {"name": "Nistatina", "category": "Antifúngico", "description": "Candidíase.", "mg": "Suspensão oral / Creme", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1146}, {"name": "Clotrimazol", "category": "Antifúngico", "description": "Micoses de pele e candidíase.", "mg": "Creme 1%", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1147}, {"name": "Miconazol", "category": "Antifúngico", "description": "Micoses de pele.", "mg": "Creme / Loção 2%", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1148}, {"name": "Cetoconazol", "category": "Antifúngico", "description": "Micoses e dermatite seborreica.", "mg": "Creme 2% / Shampoo", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1149}, {"name": "Griseofulvina", "category": "Antifúngico", "description": "Tinhas.", "mg": "Comprimido 500mg", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1150}, {"name": "Anfotericina B", "category": "Antifúngico", "description": "Micoses sistêmicas graves.", "mg": "Frasco-ampola", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1151}, {"name": "Voriconazol", "category": "Antifúngico", "description": "Aspergilose invasiva.", "mg": "Comprimido 200mg", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1152}, {"name": "Isoconazol", "category": "Antifúngico", "description": "Micoses e candidíase vaginal.", "mg": "Creme / Óvulo", "usage": "Uso oral ou tópico conforme a forma.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1153}, {"name": "Yasmin (Drospirenona+Etinilestradiol)", "category": "Anticoncepcional", "description": "Contracepção.", "mg": "Comprimido 3/0,03mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1154}, {"name": "Yaz (Drospirenona+Etinilestradiol)", "category": "Anticoncepcional", "description": "Contracepção e TPM.", "mg": "Comprimido 3/0,02mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1155}, {"name": "Diane 35 (Ciproterona+Etinilestradiol)", "category": "Anticoncepcional", "description": "Acne, hirsutismo e contracepção.", "mg": "Comprimido 2/0,035mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1156}, {"name": "Selene", "category": "Anticoncepcional", "description": "Contracepção e acne.", "mg": "Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1157}, {"name": "Cerazette (Desogestrel)", "category": "Anticoncepcional", "description": "Minipílula, contracepção.", "mg": "Comprimido 0,075mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1158}, {"name": "Adoless", "category": "Anticoncepcional", "description": "Contracepção.", "mg": "Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1159}, {"name": "Gestinol 28 (Gestodeno+Etinilestradiol)", "category": "Anticoncepcional", "description": "Contracepção.", "mg": "Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1160}, {"name": "Postinor-2 (Levonorgestrel)", "category": "Anticoncepcional", "description": "Contracepção de emergência.", "mg": "Comprimido 1,5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1161}, {"name": "Evra", "category": "Anticoncepcional", "description": "Contracepção semanal.", "mg": "Adesivo transdérmico", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1162}, {"name": "Perlutan", "category": "Anticoncepcional", "description": "Contracepção.", "mg": "Injeção mensal", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1163}, {"name": "Vitamina A (Retinol)", "category": "Vitaminas", "description": "Visão e imunidade.", "mg": "Cápsula / Gotas", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1164}, {"name": "Vitamina B12 (Cianocobalamina)", "category": "Vitaminas", "description": "Anemia megaloblástica e neuropatias.", "mg": "Comprimido / Ampola", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1165}, {"name": "Ácido Fólico (B9)", "category": "Vitaminas", "description": "Gestação e anemia.", "mg": "Comprimido 5mg", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1166}, {"name": "Vitamina B6 (Piridoxina)", "category": "Vitaminas", "description": "Metabolismo e náuseas na gestação.", "mg": "Comprimido", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1167}, {"name": "Vitamina B1 (Tiamina)", "category": "Vitaminas", "description": "Neuropatias e Wernicke.", "mg": "Comprimido / Ampola", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1168}, {"name": "Vitamina E", "category": "Vitaminas", "description": "Antioxidante.", "mg": "Cápsula 400UI", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1169}, {"name": "Vitamina K", "category": "Vitaminas", "description": "Coagulação.", "mg": "Ampola / Gotas", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1170}, {"name": "Sulfato Ferroso", "category": "Vitaminas", "description": "Anemia ferropriva.", "mg": "Comprimido 40mg Fe / Gotas", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1171}, {"name": "Magnésio", "category": "Vitaminas", "description": "Cãibras e suplementação.", "mg": "Comprimido / Cápsula", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1172}, {"name": "Selênio", "category": "Vitaminas", "description": "Antioxidante e tireoide.", "mg": "Cápsula", "usage": "Uso oral.", "posology": "Conforme prescrição médica e bula.", "isControlled": false, "id": 1173}]; novos.forEach(n=>{ if(!medicines.some(m=>m.name.toLowerCase()===n.name.toLowerCase())) medicines.push(n); }); })();
+
+    const internetMedicinesDatabase = [
+      { id: 801, name: 'Losartana Potássica', category: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', description: 'Anti-hipertensivo amplamente utilizado para proteger o sistema cardiovascular e renal.', mg: 'Comprimido - 50mg', usage: 'Uso oral.', posology: 'Adultos: 50mg a 100mg uma vez ao dia.', isControlled: false },
+      { id: 802, name: 'Zolpidem', category: 'Hipnóticos / medicamentos para dormir', description: 'Indutor do sono de ação rápida, indicado para o tratamento de insônia de curta duração.', mg: 'Comprimido - 10mg', usage: 'Uso oral. Tarja preta sob controle rígido.', posology: 'Adultos: 1 comprimido (10mg) imediatamente antes de deitar.', isControlled: true },
+      { id: 803, name: 'Metformina', category: 'Antidiabéticos (Adicionado via Nuvem)', description: 'Agente antidiabético oral que melhora a tolerância à glicose em pacientes com diabetes tipo 2.', mg: 'Comprimido - 850mg', usage: 'Uso oral durante ou após as refeições.', posology: 'Adultos: 1 comprimido de 1 a 3 vezes ao dia conforme ajuste médico.', isControlled: false }
+    ];
+
+    let internetDataDownloaded = false;
+    const customCreatedIds = [];
+
+    const categoriesData = [
+      { name: 'Analgésicos', icon: 'fa-pills', desc: 'Dores leves a moderadas e controle de febre.', isControlled: false },
+      { name: 'Anti-inflamatório', icon: 'fa-pills', desc: 'Combate dores, edemas e inflamações gerais.', isControlled: false },
+      { name: 'Antibióticos', icon: 'fa-shield-virus', desc: 'Elimina infecções e cepas bacterianas.', isControlled: false },
+      { name: 'Insulinas', icon: 'fa-syringe', desc: 'Controle de glicemia plasmática e diabetes.', isControlled: false },
+      { name: 'Antidepressivos', icon: 'fa-smile-beam', desc: '⚠️ CONTROLADO: Tratamento de distúrbios depressivos.', isControlled: true },
+      { name: 'Antipsicóticos', icon: 'fa-user-shield', desc: '⚠️ CONTROLADO: Manejo de transtornos neurológicos.', isControlled: true },
+      { name: 'Psicoestimulantes', icon: 'fa-bolt', desc: '⚠️ CONTROLADO: Foco, atenção e hiperatividade (TDAH).', isControlled: true },
+      { name: 'Anticonvulsivantes', icon: 'fa-bolt-lightning', desc: '⚠️ CONTROLADO: Prevenção de crises epilépticas.', isControlled: true },
+      { name: 'Inibidores da Bomba de Prótons (IBP)', icon: 'fa-prescription-bottle-medical', desc: 'Reduz acidez (Refluxo, Gastrite, Azia).', isControlled: false },
+      { name: 'Bloqueadores dos Canais de Cálcio', icon: 'fa-heart-pulse', desc: 'Hipertensão, angina e problemas cardíacos.', isControlled: false },
+      { name: 'Bloqueadores dos Receptores de Angiotensina II (BRA)', icon: 'fa-heart-shield', desc: 'Pressão alta e proteção cardiovascular/renal.', isControlled: false },
+      { name: 'Analgésicos Tópicos', icon: 'fa-spray-can', desc: 'Pomadas, gel e sprays de ação local.', isControlled: false },
+      { name: 'Opioides (analgésicos fortes)', icon: 'fa-skull-crossbones', desc: '⚠️ CONTROLADO: Manejo de dores severas.', isControlled: true },
+      { name: 'Benzodiazepínicos (calmantes/ansiolíticos)', icon: 'fa-brain', desc: '⚠️ CONTROLADO: Ansiedade crônica e insônia.', isControlled: true },
+      { name: 'Hipnóticos / medicamentos para dormir', icon: 'fa-moon', desc: '⚠️ CONTROLADO: Indutores de sono agudo.', isControlled: true },
+      { name: 'Anabolizantes', icon: 'fa-dumbbell', desc: '⚠️ CONTROLADO: Reposição e hormônios esteroides.', isControlled: true },
+      { name: 'Oftálmico - Lubrificante', icon: 'fa-eye', desc: 'Olho seco e lágrima artificial.', isControlled: false },
+      { name: 'Oftálmico - Antialérgico', icon: 'fa-hand-holding-hand', desc: 'Coceira e alergias nos olhos.', isControlled: false },
+      { name: 'Oftálmico - Antibiótico', icon: 'fa-shield-virus', desc: 'Conjuntivite bacteriana.', isControlled: false },
+      { name: 'Oftálmico - Glaucoma', icon: 'fa-eye-dropper', desc: 'Pressão ocular interna.', isControlled: false },
+      { name: 'Oftálmico - Vasoconstritor', icon: 'fa-eye', desc: 'Remove vermelhidão rápida.', isControlled: false },
+      { name: 'Pomadas e Cremes', icon: 'fa-pump-medical', desc: 'Tratamentos de uso cutâneo.', isControlled: false },
+      { name: 'Anticoncepcional', icon: 'fa-capsules', desc: 'Controle de fertilidade.', isControlled: false },
+      { name: 'Antifúngico', icon: 'fa-microscope', desc: 'Tratamento contra micoses.', isControlled: false },
+      { name: 'Vitaminas', icon: 'fa-prescription-bottle', desc: 'Suplementação alimentar e micronutrientes.', isControlled: false }
+    ];
+
+    const tabTitles = { home: 'Início / Home', categories: 'Classes Terapêuticas', feed: 'Pharmaxy News', prescriptions: 'Tipos de Receitas Médicas', info: 'Sobre e Termos Legais', add: 'Gerenciar Medicamentos', browser: 'Navegador Acadêmico' };
+
+    function saveToLocalStorage() {
+      const addedMeds = medicines.filter(m => customCreatedIds.includes(m.id));
+      localStorage.setItem('customMedicines', JSON.stringify(addedMeds));
+      localStorage.setItem('customCreatedIds', JSON.stringify(customCreatedIds));
+      localStorage.setItem('internetDownloaded', JSON.stringify(internetDataDownloaded));
+    }
+
+    function loadFromLocalStorage() {
+      const storedMeds = localStorage.getItem('customMedicines');
+      const storedIds = localStorage.getItem('customCreatedIds');
+      const storedInternetFlag = localStorage.getItem('internetDownloaded');
+
+      if (storedMeds && storedIds) {
+        const parsedMeds = JSON.parse(storedMeds);
+        const parsedIds = JSON.parse(storedIds);
+        
+        parsedIds.forEach(id => customCreatedIds.push(id));
+        parsedMeds.forEach(med => {
+          const index = medicines.findIndex(m => m.id === med.id);
+          if (index === -1) {
+            medicines.push(med);
+          }
+        });
+        updateHistoryCount();
+      }
+
+      if (storedInternetFlag) {
+        internetDataDownloaded = JSON.parse(storedInternetFlag);
+        if (internetDataDownloaded) {
+          internetMedicinesDatabase.forEach(onlineMed => {
+            const existe = medicines.some(localMed => localMed.id === onlineMed.id || localMed.name.toLowerCase() === onlineMed.name.toLowerCase());
+            if (!existe) {
+              medicines.push(onlineMed);
+              const catExiste = categoriesData.some(c => c.name === onlineMed.category);
+              if (!catExiste) {
+                categoriesData.push({
+                  name: onlineMed.category,
+                  icon: onlineMed.isControlled ? 'fa-moon' : 'fa-pills',
+                  desc: onlineMed.isControlled ? '⚠️ CONTROLADO: Adicionado via Nuvem' : 'Adicionado via Nuvem',
+                  isControlled: onlineMed.isControlled
+                });
+              }
+            }
+          });
+        }
+      }
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.app-view').forEach(view => view.classList.add('hidden'));
+      document.querySelectorAll('#global-nav button').forEach(btn => btn.classList.remove('active-tab'));
+      const currentView = document.getElementById(`view-${tabName}`);
+      if(currentView) currentView.classList.remove('hidden');
+      const currentNavBtn = document.getElementById(`nav-${tabName}`);
+      if(currentNavBtn) currentNavBtn.classList.add('active-tab');
+      document.getElementById('header-subtitle').innerText = tabTitles[tabName];
+      if(tabName === 'categories') backToCategoriesGrid();
+      if(tabName === 'add') { populateClassDropdown(); switchSubTab('form'); }
+      
+      checkInternetCardVisibility();
+    }
+
+    function checkInternetCardVisibility() {
+      const card = document.getElementById('internet-download-card');
+      const isHomeActive = !document.getElementById('view-home').classList.contains('hidden');
+      if (navigator.onLine && !internetDataDownloaded && isHomeActive) {
+        card.classList.remove('hidden');
+      } else {
+        card.classList.add('hidden');
+      }
+    }
+
+    function downloadMedicinesFromInternet() {
+      const btn = document.getElementById('btn-download-cloud');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> Baixando...';
+
+      setTimeout(() => {
+        let novosAdicionados = 0;
+        
+        internetMedicinesDatabase.forEach(onlineMed => {
+          const existe = medicines.some(localMed => localMed.id === onlineMed.id || localMed.name.toLowerCase() === onlineMed.name.toLowerCase());
+          if (!existe) {
+            medicines.push(onlineMed);
+            novosAdicionados++;
+
+            const catExiste = categoriesData.some(c => c.name === onlineMed.category);
+            if (!catExiste) {
+              categoriesData.push({
+                name: onlineMed.category,
+                icon: onlineMed.isControlled ? 'fa-moon' : 'fa-pills',
+                desc: onlineMed.isControlled ? '⚠️ CONTROLADO: Adicionado via Nuvem' : 'Adicionado via Nuvem',
+                isControlled: onlineMed.isControlled
+              });
+            }
+          }
+        });
+
+        internetDataDownloaded = true;
+        document.getElementById('internet-download-card').classList.add('hidden');
+        
+        document.getElementById('downloadModalText').innerText = `Sucesso! ${novosAdicionados} novos medicamentos foram baixados e salvos no seu banco de dados local.`;
+        document.getElementById('downloadSuccessModal').classList.remove('hidden');
+        
+        saveToLocalStorage();
+        renderHomeMedicines();
+        renderCategoriesGrid();
+      }, 1500);
+    }
+
+    function closeDownloadModal() {
+      document.getElementById('downloadSuccessModal').classList.add('hidden');
+    }
+
+    function switchSubTab(subTab) {
+      document.getElementById('subtab-form').classList.remove('active-subtab');
+      document.getElementById('subtab-history').classList.remove('active-subtab');
+      document.getElementById('container-add-form').classList.add('hidden');
+      document.getElementById('container-add-history').classList.add('hidden');
+      if(subTab === 'form') {
+        document.getElementById('subtab-form').classList.add('active-subtab');
+        document.getElementById('container-add-form').classList.remove('hidden');
+      } else {
+        document.getElementById('subtab-history').classList.add('active-subtab');
+        document.getElementById('container-add-history').classList.remove('hidden');
+        renderHistoryList();
+      }
+    }
+
+    function populateClassDropdown() {
+      const dropdown = document.getElementById('addClass');
+      let optionsHtml = '<option value="" disabled selected>Selecione a classe terapêutica...</option>';
+      categoriesData.forEach(cat => { optionsHtml += `<option value="${cat.name}">${cat.name}</option>`; });
+      dropdown.innerHTML = optionsHtml;
+    }
+
+    function handleCreateMedicine(event) {
+      event.preventDefault();
+      const editIdStr = document.getElementById('editMedId').value;
+      const name = document.getElementById('addName').value.trim();
+      const category = document.getElementById('addClass').value;
+      const mgInput = document.getElementById('addMg').value.trim();
+      const type = document.getElementById('addType').value;
+      const usage = document.getElementById('addUsage').value.trim();
+      const posology = document.getElementById('addPosology').value.trim();
+      const description = document.getElementById('addDescription').value.trim();
+      const isControlled = document.getElementById('addIsControlled').checked;
+      const formattedMgInfo = mgInput.includes(' - ') ? mgInput : `${type} - ${mgInput}`;
+
+      if (editIdStr !== "") {
+        const idToEdit = parseInt(editIdStr);
+        const index = medicines.findIndex(m => m.id === idToEdit);
+        if (index !== -1) {
+          medicines[index] = { id: idToEdit, name, category, description, mg: formattedMgInfo, usage, posology, isControlled };
+          alert(`${name} atualizado com sucesso!`);
+        }
+        resetFormState();
+      } else {
+        const newId = medicines.length > 0 ? Math.max(...medicines.map(m => m.id)) + 1 : 1;
+        const newMed = { id: newId, name, category, description, mg: formattedMgInfo, usage, posology, isControlled };
+        medicines.push(newMed);
+        customCreatedIds.push(newId);
+        alert(`${name} adicionado com sucesso!`);
+        resetFormState();
+      }
+      saveToLocalStorage();
+      updateHistoryCount(); renderHomeMedicines(); switchTab('home');
+    }
+
+    function editMedicine(id) {
+      const med = medicines.find(m => m.id === id);
+      if(!med) return;
+      switchSubTab('form');
+      document.getElementById('editMedId').value = med.id;
+      document.getElementById('addName').value = med.name;
+      document.getElementById('addClass').value = med.category;
+      document.getElementById('addUsage').value = med.usage;
+      document.getElementById('addPosology').value = med.posology;
+      document.getElementById('addDescription').value = med.description;
+      document.getElementById('addIsControlled').checked = med.isControlled;
+
+      if(med.mg.includes(' - ')) {
+        const parts = med.mg.split(' - ');
+        document.getElementById('addType').value = parts[0];
+        document.getElementById('addMg').value = parts[1];
+      } else {
+        document.getElementById('addType').value = "Comprimido";
+        document.getElementById('addMg').value = med.mg;
+      }
+      document.getElementById('form-instructions').innerHTML = `⚠️ Você está editando o medicamento: <strong class="text-blue-700">${med.name}</strong>`;
+      document.getElementById('submitBtnText').innerText = "Salvar Alterações";
+      document.getElementById('submitBtn').className = "w-full bg-amber-500 text-white py-3 rounded-2xl font-bold hover:bg-amber-600 transition flex items-center justify-center gap-2";
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+    }
+
+    function removeMedicine(id) {
+      const med = medicines.find(m => m.id === id);
+      if (!med) return;
+      if(confirm(`Tem certeza que deseja remover permanentemente o medicamento "${med.name}" do aplicativo?`)) {
+        const medIndex = medicines.findIndex(m => m.id === id);
+        if(medIndex !== -1) medicines.splice(medIndex, 1);
+        const historyIndex = customCreatedIds.indexOf(id);
+        if(historyIndex !== -1) customCreatedIds.splice(historyIndex, 1);
+        alert("Medicamento excluído com sucesso.");
+        saveToLocalStorage();
+        updateHistoryCount(); renderHistoryList(); renderHomeMedicines();
+      }
+    }
+
+    function resetFormState() {
+      document.getElementById('addMedicineForm').reset();
+      document.getElementById('editMedId').value = "";
+      document.getElementById('form-instructions').innerText = "Insira as especificações abaixo para adicionar um novo registro ao banco de dados do seu aplicativo.";
+      document.getElementById('submitBtnText').innerText = "Cadastrar Medicamento";
+      document.getElementById('submitBtn').className = "w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition flex items-center justify-center gap-2";
+      document.getElementById('cancelEditBtn').classList.add('hidden');
+    }
+
+    function updateHistoryCount() { document.getElementById('history-count').innerText = customCreatedIds.length; }
+
+    function renderHistoryList() {
+      const container = document.getElementById('historyMedicineList');
+      container.innerHTML = '';
+      const historyMeds = medicines.filter(m => customCreatedIds.includes(m.id));
+      if(historyMeds.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-400 py-8">Nenhum medicamento adicionado por você até o momento.</p>`;
+        return;
+      }
+      historyMeds.forEach(med => {
+        container.innerHTML += `
+          <div class="bg-white rounded-2xl p-4 shadow border border-gray-100 flex justify-between items-center">
+            <div class="space-y-1">
+              <h4 class="font-bold text-gray-800 text-base">${med.name}</h4>
+              <p class="text-xs text-blue-600 font-semibold">${med.category}</p>
+              <p class="text-xs text-gray-400">${med.mg}</p>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="editMedicine(${med.id})" class="bg-amber-100 hover:bg-amber-200 text-amber-700 p-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition px-3"><i class="fa-solid fa-pen"></i> Editar</button>
+              <button onclick="removeMedicine(${med.id})" class="bg-red-100 hover:bg-red-200 text-red-600 p-2 text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition px-3"><i class="fa-solid fa-trash"></i> Excluir</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    function createMedicineCard(med) {
+      const cardBg = med.isControlled ? 'bg-zinc-950 text-white' : 'bg-white text-gray-700';
+      const titleColor = med.isControlled ? 'text-neutral-100' : 'text-blue-800';
+      const catColor = med.isControlled ? 'text-red-400 font-bold' : 'text-blue-500';
+      const descColor = med.isControlled ? 'text-neutral-300' : 'text-gray-600';
+      const iconContainerBg = med.isControlled ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-blue-100 text-blue-700';
+      const btnBg = med.isControlled ? 'bg-red-700 hover:bg-red-800 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white';
+      const controlledText = med.isControlled ? '<p class="text-[10px] text-red-500 font-extrabold tracking-widest mt-1 uppercase"><i class="fa-solid fa-triangle-exclamation"></i> USO CONTROLADO</p>' : '';
+      
+      let customIcon = 'fa-capsules';
+      if (med.category === 'Insulinas') customIcon = 'fa-syringe';
+      else if (med.category === 'Antibióticos') customIcon = 'fa-shield-virus';
+      else if (med.category === 'Pomadas e Cremes') customIcon = 'fa-pump-medical';
+      else if (med.category === 'Inibidores da Bomba de Prótons (IBP)') customIcon = 'fa-prescription-bottle-medical';
+      else if (med.category === 'Bloqueadores dos Canais de Cálcio') customIcon = 'fa-heart-pulse';
+      else if (med.category === 'Bloqueadores dos Receptores de Angiotensina II (BRA)') customIcon = 'fa-heart-shield';
+      else if (med.category === 'Vitaminas') customIcon = 'fa-prescription-bottle';
+      else if (med.category.startsWith('Oftálmico')) customIcon = 'fa-eye';
+
+      return `
+        <div class="${cardBg} rounded-3xl p-5 shadow card-hover transition-colors duration-300">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-lg font-bold ${titleColor}">${med.name}</h3>
+              <p class="text-sm ${catColor}">${med.category}</p>
+              ${controlledText}
+            </div>
+            <div class="${iconContainerBg} p-3 rounded-2xl"><i class="fa-solid ${med.isControlled ? 'fa-biohazard text-xl' : customIcon}"></i></div>
+          </div>
+          <p class="${descColor} text-sm mt-3">${med.description}</p>
+          <button onclick="openModal(${med.id})" class="mt-4 ${btnBg} px-4 py-2 rounded-xl w-full font-semibold transition">Ver Informações</button>
+        </div>`;
+    }
+
+    function renderHomeMedicines(filter = '') {
+      const container = document.getElementById('homeMedicineList');
+      container.innerHTML = '';
+      const filtered = medicines.filter(m => m.name.toLowerCase().includes(filter.toLowerCase()));
+      if(filtered.length === 0) { container.innerHTML = `<p class="text-center text-gray-400 py-4">Nenhum resultado.</p>`; return; }
+      filtered.forEach(m => container.innerHTML += createMedicineCard(m));
+    }
+    document.getElementById('homeSearchInput').addEventListener('input', (e) => renderHomeMedicines(e.target.value));
+
+    function renderCategoriesGrid() {
+      const grid = document.getElementById('categories-grid');
+      grid.innerHTML = '';
+      categoriesData.forEach(cat => {
+        const borderStyle = cat.isControlled ? 'border-zinc-900 bg-zinc-950 text-white' : 'bg-white text-blue-900 border-transparent hover:border-blue-300';
+        let displayIcon = cat.icon;
+        if (cat.name === 'Inibidores da Bomba de Prótons (IBP)') displayIcon = 'fa-prescription-bottle-medical';
+        else if (cat.name === 'Bloqueadores dos Canais de Cálcio') displayIcon = 'fa-heart-pulse';
+        else if (cat.name === 'Bloqueadores dos Receptores de Angiotensina II (BRA)') displayIcon = 'fa-heart-shield';
+        else if (cat.name === 'Vitaminas') displayIcon = 'fa-prescription-bottle';
+
+        grid.innerHTML += `
+          <div onclick="enterCategoryClass('${cat.name}')" class="${borderStyle} p-4 rounded-2xl shadow card-hover cursor-pointer border">
+            <i class="fa-solid ${displayIcon} text-2xl ${cat.isControlled ? 'text-red-500' : 'text-blue-600'}"></i>
+            <h3 class="font-bold mt-2 text-blue-900 leading-tight text-sm">${cat.name}</h3>
+            <p class="text-xs text-gray-500 mt-1">${cat.desc}</p>
+          </div>`;
+      });
+    }
+
+    function enterCategoryClass(categoryName) {
+      document.getElementById('categories-grid-wrapper').classList.add('hidden');
+      document.getElementById('category-detail-wrapper').classList.remove('hidden');
+      document.getElementById('selected-category-title').innerText = categoryName;
+      const container = document.getElementById('categorySpecificMedicineList');
+      container.innerHTML = '';
+      const list = medicines.filter(m => m.category === categoryName);
+      if(list.length === 0) { container.innerHTML = `<p class="text-center text-gray-400 py-6">Nenhum remédio cadastrado nesta classe.</p>`; } 
+      else { list.forEach(m => container.innerHTML += createMedicineCard(m)); }
+    }
+
+    function backToCategoriesGrid() {
+      document.getElementById('category-detail-wrapper').classList.add('hidden');
+      document.getElementById('categories-grid-wrapper').classList.remove('hidden');
+    }
+
+    function openModal(id) {
+      const med = medicines.find(m => m.id === id);
+      if(med) {
+        const modalContainer = document.getElementById('detailsModal').firstElementChild;
+        const iconContainer = document.getElementById('modalIconContainer');
+        const icon = document.getElementById('modalIcon');
+        const badge = document.getElementById('modalControlledBadge');
+        const closeBtn = document.getElementById('modalCloseBtn');
+        const labelMg = document.getElementById('modalLabelMg');
+        const labelUsage = document.getElementById('modalLabelUsage');
+        const labelPosology = document.getElementById('modalLabelPosology');
+
+        document.getElementById('modalMedName').innerText = med.name;
+        document.getElementById('modalMedCategory').innerText = med.category;
+        document.getElementById('modalMedMg').innerText = med.mg;
+        document.getElementById('modalMedUsage').innerText = med.usage;
+        document.getElementById('modalMedPosology').innerText = med.posology;
+        { const x=medExtra(med); document.getElementById('modalMedWhy').innerText=x.why; document.getElementById('modalMedRisk').innerText=x.risk; }
+
+        if(med.isControlled) {
+          modalContainer.className = "bg-zinc-950 text-white rounded-3xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 relative shadow-2xl border border-red-900";
+          iconContainer.className = "bg-red-950 text-red-400 p-3 rounded-2xl text-xl border border-red-800";
+          icon.className = "fa-solid fa-biohazard";
+          badge.classList.remove('hidden');
+          closeBtn.className = "mt-6 w-full bg-red-700 text-white py-3 rounded-2xl font-bold hover:bg-red-800 transition shadow-lg shadow-red-900/40";
+          labelMg.className = "font-bold text-red-400 flex items-center gap-2 mb-1";
+          labelUsage.className = "font-bold text-red-400 flex items-center gap-2 mb-1";
+          labelPosology.className = "font-bold text-red-400 flex items-center gap-2 mb-1";
+          document.getElementById('modalMedMg').className = "bg-zinc-900 p-2 rounded-xl border border-zinc-800 text-neutral-200";
+          document.getElementById('modalMedUsage').className = "bg-zinc-900 p-2 rounded-xl border border-zinc-800 text-neutral-200";
+          document.getElementById('modalMedPosology').className = "bg-zinc-900 p-2 rounded-xl border border-zinc-800 text-neutral-200";
+        } else {
+          modalContainer.className = "bg-white text-gray-700 rounded-3xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 relative shadow-2xl";
+          iconContainer.className = "bg-blue-100 text-blue-700 p-3 rounded-2xl text-xl";
+          if(med.category === 'Insulinas') icon.className = "fa-solid fa-syringe";
+          else if(med.category === 'Antibióticos') icon.className = "fa-solid fa-shield-virus";
+          else if(med.category === 'Pomadas e Cremes') icon.className = "fa-solid fa-pump-medical";
+          else if(med.category === 'Inibidores da Bomba de Prótons (IBP)') icon.className = "fa-solid fa-prescription-bottle-medical";
+          else if(med.category === 'Bloqueadores dos Canais de Cálcio') icon.className = "fa-solid fa-heart-pulse";
+          else if(med.category === 'Bloqueadores dos Receptores de Angiotensina II (BRA)') icon.className = "fa-solid fa-heart-shield";
+          else if(med.category === 'Vitaminas') icon.className = "fa-solid fa-prescription-bottle";
+          else if(med.category.startsWith('Oftálmico')) icon.className = "fa-solid fa-eye";
+          else icon.className = "fa-solid fa-circle-info";
+          
+          badge.classList.add('hidden');
+          closeBtn.className = "mt-6 w-full bg-blue-600 text-white py-3 rounded-2xl font-bold hover:bg-blue-700 transition";
+          labelMg.className = "font-bold text-blue-800 flex items-center gap-2 mb-1";
+          labelUsage.className = "font-bold text-blue-800 flex items-center gap-2 mb-1";
+          labelPosology.className = "font-bold text-blue-800 flex items-center gap-2 mb-1";
+          document.getElementById('modalMedMg').className = "bg-gray-50 p-2 rounded-xl border border-gray-100";
+          document.getElementById('modalMedUsage').className = "bg-gray-50 p-2 rounded-xl border border-gray-100";
+          document.getElementById('modalMedPosology').className = "bg-gray-50 p-2 rounded-xl border border-gray-100";
+        }
+        document.getElementById('detailsModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeModal() { document.getElementById('detailsModal').classList.add('hidden'); document.body.style.overflow = ''; }
+
+    function updateOnlineStatus() {
+      const banner = document.getElementById('internet-status-banner');
+      const icon = document.getElementById('internet-status-icon');
+      const text = document.getElementById('internet-status-text');
+      if (navigator.onLine) {
+        banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-2 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all duration-500 transform bg-emerald-500 text-white shadow-md";
+        icon.innerHTML = '<i class="fa-solid fa-wifi"></i>'; text.innerText = 'Conexão restabelecida!';
+        setTimeout(() => { banner.classList.add('-translate-y-full'); }, 3000);
+      } else {
+        banner.className = "fixed top-0 left-0 right-0 z-50 text-center py-2 px-4 text-sm font-bold flex items-center justify-center gap-2 transition-all duration-500 transform translate-y-0 bg-red-600 text-white shadow-md";
+        icon.innerHTML = '<i class="fa-solid fa-plane"></i>'; text.innerText = 'Sem conexão com a internet. O app funcionará com dados locais.';
+      }
+      checkInternetCardVisibility();
+    }
+
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const loadingScreen = document.getElementById('splash');
+    const mainHeader = document.getElementById('global-header');
+    const mainNav = document.getElementById('global-nav');
+
+    loadFromLocalStorage();
+
+    setTimeout(() => {
+      welcomeScreen.classList.add('fade-out');
+      setTimeout(() => {
+        welcomeScreen.style.display = 'none';
+        loadingScreen.classList.remove('hidden');
+        loadingScreen.classList.add('fade-in');
+      }, 400);
+    }, 2000);
+
+    setTimeout(() => {
+      loadingScreen.classList.remove('fade-in');
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        mainHeader.classList.remove('hidden');
+        mainNav.classList.remove('hidden');
+        renderHomeMedicines(); renderCategoriesGrid(); switchTab('home');
+        if (!navigator.onLine) { updateOnlineStatus(); }
+      }, 400);
+    }, 4200);
+      const ENG={Google:'https://www.google.com/search?q=',PubMed:'https://pubmed.ncbi.nlm.nih.gov/?term=',SciELO:'https://search.scielo.org/?q=',Bulário:'https://www.google.com/search?q=bulário+anvisa+',Wikipédia:'https://pt.wikipedia.org/w/index.php?search=',YouTube:'https://www.youtube.com/results?search_query='};
+    const SITES=[['Anvisa','https://www.gov.br/anvisa/pt-br','fa-landmark'],['Cons. Fed. de Farmácia','https://www.cff.org.br','fa-user-doctor'],['Bulário ANVISA','https://consultas.anvisa.gov.br/#/bulario/','fa-book-medical'],['SciELO','https://www.scielo.br','fa-book-open'],['PubMed','https://pubmed.ncbi.nlm.nih.gov','fa-flask'],['Ministério da Saúde','https://www.gov.br/saude/pt-br','fa-hospital'],['Drugs.com','https://www.drugs.com','fa-pills'],['UpToDate/Medscape','https://www.medscape.com','fa-stethoscope']];
+    let eng='Google';
+    function openExt(u){ window.open(u,'_blank'); }
+    function renderEngines(){ document.getElementById('engines').innerHTML=Object.keys(ENG).map(k=>`<button type="button" onclick="eng='${k}';renderEngines()" class="brw-chip" style="${k===eng?'background:#2563eb;color:#fff':''}">${k}</button>`).join(''); }
+    function doSearch(e){ e.preventDefault(); const q=document.getElementById('brwQuery').value.trim(); if(q) openExt(ENG[eng]+encodeURIComponent(q)); }
+    function renderSites(){ document.getElementById('brwSites').innerHTML=SITES.map(x=>`<a href="#" onclick="openExt('${x[1]}');return false" class="brw-card"><i class="fa-solid ${x[2]} text-blue-600 text-xl"></i><p class="text-xs font-bold mt-2 text-blue-900">${x[0]}</p></a>`).join(''); }
+
+    /* ===== Para que serve + Riscos (regras por nome; fallback por classe) ===== */
+    const _n=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+    const MED_RULES=[
+      [/dipirona|metamizol/,'Alívio de dor e febre.','Reações alérgicas; raramente agranulocitose (queda de glóbulos brancos); queda de pressão na forma injetável. Evitar em alergia a pirazolonas.'],
+      [/codeina|tramadol|morfina|oxicodona|metadona|fentanila|buprenorfina|tapentadol|petidina/,'Dor moderada a intensa (opioide).','Depressão respiratória, sedação, constipação, náuseas, tolerância e dependência. Risco fatal com álcool/benzodiazepínicos. Tramadol e petidina: convulsões e síndrome serotoninérgica.'],
+      [/paracetamol/,'Dor leve a moderada e febre.','Hepatotoxicidade em excesso (acima de 4 g/dia) ou com álcool; atenção a associações que também contêm paracetamol.'],
+      [/acido acetilsalicilico/,'Dor, febre e prevenção de eventos cardiovasculares (antiagregante).','Sangramento, gastrite/úlcera, alergia em asmáticos; síndrome de Reye em crianças com infecção viral.'],
+      [/nimesulida/,'Dor e inflamação aguda.','Hepatotoxicidade (uso curto, máx. ~15 dias), gastrite, lesão renal; contraindicada em hepatopatas e gestantes.'],
+      [/prednisona|prednisolona|dexametasona|betametasona/,'Inflamações, alergias graves, doenças autoimunes e imunossupressão.','Uso prolongado: hiperglicemia, osteoporose, hipertensão, retenção de líquidos, infecções, síndrome de Cushing, supressão adrenal. Não interromper de forma brusca.'],
+      [/gentamicina|amicacina|tobramicina/,'Infecções bacterianas graves (aminoglicosídeo).','Nefrotoxicidade e ototoxicidade; exige monitorização de função renal e níveis séricos.'],
+      [/vancomicina/,'Infecções por Gram-positivos resistentes (MRSA).','Nefrotoxicidade, ototoxicidade, “síndrome do homem vermelho” se infusão rápida.'],
+      [/ciprofloxacino|levofloxacino|norfloxacino|moxifloxacino|ofloxacino/,'Infecções urinárias, respiratórias e outras (quinolona).','Tendinite/ruptura de tendão, neuropatia, prolongamento do QT, fotossensibilidade; evitar em crianças e gestantes.'],
+      [/metronidazol/,'Infecções por anaeróbios e protozoários.','Gosto metálico, náuseas; efeito tipo dissulfiram com álcool; neuropatia em uso prolongado.'],
+      [/doxiciclina/,'Infecções bacterianas, acne e outras (tetraciclina).','Fotossensibilidade, esofagite (tomar com água), manchas nos dentes; evitar na gestação e em crianças pequenas.'],
+      [/clindamicina/,'Infecções por anaeróbios, pele e tecidos moles.','Colite pseudomembranosa (diarreia grave por C. difficile), alergia.'],
+      [/sulfametoxazol/,'Infecções urinárias e respiratórias.','Reações cutâneas graves (Stevens-Johnson), hipercalemia, alergia a sulfas, evitar na gestação.'],
+      [/nitrofurantoina/,'Infecção urinária baixa.','Náuseas, neuropatia e toxicidade pulmonar em uso prolongado; evitar em insuficiência renal.'],
+      [/linezolida/,'Infecções por Gram-positivos resistentes.','Mielossupressão, síndrome serotoninérgica com antidepressivos, neuropatia em uso longo.'],
+      [/meropenem/,'Infecções graves e hospitalares (carbapenêmico).','Convulsões em doses altas/insuficiência renal, alergia cruzada com penicilinas, diarreia.'],
+      [/claritromicina|eritromicina|azitromicina/,'Infecções respiratórias e de pele (macrolídeo).','Náuseas e diarreia, prolongamento do QT, interações medicamentosas (principalmente claritromicina/eritromicina).'],
+      [/clozapina/,'Esquizofrenia resistente a outros tratamentos.','Agranulocitose (hemograma obrigatório), miocardite, convulsões, sialorreia, ganho de peso.'],
+      [/lamotrigina/,'Epilepsia e transtorno bipolar.','Erupção cutânea grave (Stevens-Johnson) se dose subir rápido; tontura, cefaleia.'],
+      [/valproico/,'Epilepsia e transtorno bipolar.','Hepatotoxicidade, pancreatite, ganho de peso e alto risco teratogênico (defeitos do tubo neural).'],
+      [/carbamazepina|oxcarbazepina|fenitoina|fenobarbital|primidona/,'Epilepsia (e dor neuropática, no caso da carbamazepina).','Sonolência, tontura, interações (indutores enzimáticos), teratogenicidade, reações cutâneas graves; não suspender de forma brusca.'],
+      [/bupropiona/,'Depressão e auxílio à cessação do tabagismo.','Convulsões em dose alta, insônia, aumento de pressão; contraindicada em epilepsia e bulimia.'],
+      [/metformina/,'Diabetes mellitus tipo 2.','Desconforto gastrointestinal, deficiência de B12, acidose lática (rara); evitar em insuficiência renal grave.'],
+      [/ferro|sulfato ferroso/,'Prevenção e tratamento de anemia ferropriva.','Constipação, fezes escuras, náuseas; intoxicação grave em crianças por ingestão acidental.'],
+      [/vitamina (a|d|e|k)\b|retinol|cálcio|calcio/,'Reposição de vitamina/mineral em deficiência.','Lipossolúveis acumulam: hipervitaminose (toxicidade hepática, hipercalcemia, sangramento). Vitamina K interfere em anticoagulantes (varfarina).'],
+      [/postinor/,'Contracepção de emergência.','Náuseas, alteração menstrual, cefaleia; não é método de uso regular e não protege contra ISTs.'],
+      [/depo-provera|perlutan|mesigyna/,'Contracepção injetável.','Sangramento irregular, ganho de peso; Depo-Provera pode reduzir densidade óssea; risco tromboembólico nas combinadas.'],
+      [/testosterona|oxandrolona|nandrolona|estanozolol|mesterolona/,'Reposição hormonal (hipogonadismo) e usos clínicos específicos.','Hepatotoxicidade, aumento de colesterol LDL, risco cardiovascular, atrofia testicular, virilização, acne, dependência. Uso estético sem prescrição é perigoso e ilegal.'],
+      [/trofilerm|clostebol/,'Cicatrização de feridas e úlceras (com antibiótico).','Alergia de contato (neomicina), absorção sistêmica em áreas extensas; clostebol é substância anabolizante (doping).'],
+      [/anfotericina/,'Infecções fúngicas sistêmicas graves.','Nefrotoxicidade, febre/calafrios na infusão, hipocalemia; exige monitorização hospitalar.'],
+      [/zolpidem|zopiclona|eszopiclona|triazolam|nitrazepam/,'Tratamento de curta duração da insônia.','Dependência, sonolência residual, amnésia, sonambulismo e comportamentos complexos durante o sono, quedas em idosos.'],
+      [/timolol/,'Redução da pressão intraocular (glaucoma).','Absorção sistêmica: bradicardia, broncoespasmo (evitar em asma/DPOC), ardor ocular.'],
+      [/latanoprosta|travoprosta|bimatoprosta/,'Redução da pressão intraocular (glaucoma).','Escurecimento da íris e da pele, crescimento de cílios, hiperemia conjuntival.']
+    ];
+    const MED_CATS={
+      'Analgésicos':['Alívio de dor e febre.','Reações alérgicas, efeitos no fígado/estômago conforme a substância; não exceder a dose máxima diária.'],
+      'Anti-inflamatório':['Redução de dor, inflamação e febre (AINE).','Gastrite/úlcera e sangramento digestivo, lesão renal, aumento de pressão e de risco cardiovascular; evitar na gestação (principalmente 3º trimestre) e com anticoagulantes.'],
+      'Antibióticos':['Tratamento de infecções bacterianas.','Alergia (penicilinas e cefalosporinas: risco de anafilaxia), diarreia, candidíase, resistência bacteriana se mal usado; completar o tratamento e nunca automedicar.'],
+      'Insulinas':['Controle da glicemia no diabetes.','Hipoglicemia (principal risco), ganho de peso, lipodistrofia no local da aplicação, hipocalemia; alternar locais de aplicação.'],
+      'Antidepressivos':['Depressão, ansiedade, TOC e outros transtornos.','Piora inicial/ideação suicida (jovens), síndrome de descontinuação, síndrome serotoninérgica, disfunção sexual, ganho de peso; tricíclicos: cardiotoxicidade e efeitos anticolinérgicos.'],
+      'Antipsicóticos':['Esquizofrenia, transtorno bipolar e agitação grave.','Sedação, ganho de peso e síndrome metabólica, sintomas extrapiramidais, prolongamento do QT; maior mortalidade em idosos com demência.'],
+      'Psicoestimulantes':['TDAH e narcolepsia.','Dependência, insônia, perda de apetite, taquicardia e aumento de pressão; uso controlado, risco de abuso.'],
+      'Anticonvulsivantes':['Epilepsia, dor neuropática e transtorno bipolar.','Sonolência, tontura, interações medicamentosas, teratogenicidade; não suspender de forma brusca (risco de crise).'],
+      'Inibidores da Bomba de Prótons (IBP)':['Refluxo, gastrite e úlcera (reduz o ácido gástrico).','Uso prolongado: deficiência de B12 e magnésio, risco de fraturas e de infecção por C. difficile; efeito rebote ao suspender.'],
+      'Bloqueadores dos Canais de Cálcio':['Hipertensão arterial e angina.','Edema de tornozelos, cefaleia, rubor, hipotensão; verapamil/diltiazem: bradicardia e bloqueio AV.'],
+      'Bloqueadores dos Receptores de Angiotensina II (BRA)':['Hipertensão, insuficiência cardíaca e proteção renal.','Hipercalemia, hipotensão, piora da função renal; contraindicados na gestação.'],
+      'Analgésicos Tópicos':['Dor muscular e articular localizada.','Irritação e alergia na pele; não aplicar em feridas ou mucosas; evitar sol na área (diclofenaco/cetoprofeno gel).'],
+      'Opioides (analgésicos fortes)':['Dor moderada a intensa.','Depressão respiratória, sedação, constipação, dependência e overdose; perigo ao associar com álcool ou benzodiazepínicos.'],
+      'Benzodiazepínicos (calmantes/ansiolíticos)':['Ansiedade, insônia, convulsões e sedação.','Dependência e tolerância, sedação, queda em idosos, amnésia, depressão respiratória com álcool/opioides; retirada gradual.'],
+      'Oftálmico - Vasoconstritor':['Alívio da vermelhidão ocular.','Efeito rebote (olho mais vermelho), irritação; evitar uso contínuo e em glaucoma de ângulo fechado.'],
+      'Oftálmico - Glaucoma':['Redução da pressão intraocular (glaucoma).','Ardor, hiperemia, visão turva; efeitos sistêmicos conforme a classe (betabloqueadores: bradicardia e asma).'],
+      'Oftálmico - Lubrificante':['Olho seco e conforto ocular.','Visão turva passageira, contaminação do frasco; não tocar a ponta no olho.'],
+      'Oftálmico - Antialérgico':['Conjuntivite alérgica (coceira e vermelhidão).','Ardor leve, sonolência ou ressecamento; evitar lentes de contato durante o uso.'],
+      'Oftálmico - Antibiótico':['Conjuntivite e infecções bacterianas oculares.','Alergia local, resistência bacteriana se uso prolongado; corticoide associado pode aumentar pressão ocular e mascarar infecção.'],
+      'Pomadas e Cremes':['Tratamento tópico de pele (inflamação, infecção, cicatrização).','Irritação e alergia de contato; corticoides: atrofia da pele e absorção sistêmica em uso prolongado ou área extensa.'],
+      'Antifúngico':['Tratamento de micoses e infecções fúngicas.','Sistêmicos: hepatotoxicidade e interações (CYP450); tópicos: irritação local. Tratar pelo tempo completo.'],
+      'Anticoncepcional':['Prevenção da gravidez (e controle do ciclo/acne em alguns).','Trombose venosa, AVC, hipertensão, náuseas, cefaleia; contraindicado em fumantes acima de 35 anos, enxaqueca com aura e histórico de trombose. Não protege contra ISTs.'],
+      'Vitaminas':['Suplementação em deficiências e necessidades aumentadas.','Excesso pode fazer mal: lipossolúveis (A, D, E, K) acumulam e intoxicam; hidrossolúveis em megadoses também (ex.: B6 causa neuropatia, C causa diarreia e cálculo renal). Evite megadoses sem orientação.'],
+      'Hipnóticos / medicamentos para dormir':['Tratamento de curta duração da insônia.','Dependência, sonolência residual, amnésia, comportamentos complexos durante o sono; não associar com álcool.'],
+      'Anabolizantes':['Reposição hormonal e usos clínicos específicos.','Hepatotoxicidade, risco cardiovascular, alterações hormonais, dependência; uso estético sem prescrição é perigoso e ilegal.']
+    };
+    function medExtra(m){
+      const nm=_n(m.name); let why=m.description||'', risk='';
+      const r=MED_RULES.find(x=>x[0].test(nm));
+      const c=MED_CATS[m.category];
+      if(r){ why=r[1]+(m.description?' '+m.description:''); risk=r[2]; }
+      else if(c){ why=(m.description?m.description+' ':'')+'Indicação geral: '+c[0].replace(/\.$/,'')+'.'; risk=c[1]; }
+      else { why=m.description||'Consulte a bula para as indicações.'; risk='Risco de reações alérgicas e interações medicamentosas; use apenas com orientação e leia a bula.'; }
+      if(m.isControlled) risk+=' ⚠️ Medicamento controlado: exige receita especial retida, risco de dependência e abuso.';
+      return {why:why.trim(),risk:risk.trim()};
+    }
+
+    /* ===== Notícias estilo Internet Explorer (carrossel arrastável) ===== */
+    function esc(s){ return String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+    function ts(d){ const t=Date.parse((d||'').replace(' ','T')+(d&&d.length<=19&&!/[zZ+]/.test(d)?'Z':'')); return isNaN(t)?0:t; }
+    function ago(d){ const t=ts(d); if(!t) return ''; const h=Math.floor((Date.now()-t)/36e5); return h<1?'agora':h<24?h+' h':Math.floor(h/24)+' d'; }
+    function iePhoto(n,i){ const g=['#1d4ed8,#38bdf8','#0f766e,#5eead4','#7c3aed,#c4b5fd','#be123c,#fda4af','#b45309,#fcd34d'][i%5]; const im=n.img&&/^https?:/.test(n.img)?`<img src="${esc(n.img)}" loading="lazy" referrerpolicy="no-referrer" draggable="false" onerror="this.remove()">`:''; return `<div class="ie-ph" style="background:linear-gradient(135deg,${g})"><i class="fa-solid fa-newspaper"></i>${im}</div>`; }
+    let _moved=false;
+    function newsGo(i){ if(_moved){ _moved=false; return; } const n=(window._nl||[])[i]; if(n&&n.l) openExt(n.l); }
+    function dragScroll(el){
+      let down=false,sx=0,sl=0;
+      el.addEventListener('mousedown',e=>{ down=true; _moved=false; sx=e.pageX; sl=el.scrollLeft; window._pause=Date.now()+10000; });
+      window.addEventListener('mousemove',e=>{ if(!down) return; const dx=e.pageX-sx; if(Math.abs(dx)>6){ _moved=true; el.classList.add('drag'); } if(_moved) el.scrollLeft=sl-dx; });
+      window.addEventListener('mouseup',()=>{ if(!down) return; down=false; el.classList.remove('drag'); if(el.id==='ieTrack'){ const w=el.clientWidth; el.scrollTo({left:Math.round(el.scrollLeft/w)*w,behavior:'smooth'}); } });
+      el.addEventListener('touchstart',()=>{ window._pause=Date.now()+10000; },{passive:true});
+    }
+    function ieGo(dir){ const t=document.getElementById('ieTrack'); if(!t) return; const w=t.clientWidth, c=Math.round(t.scrollLeft/w), max=t.children.length-1; let n=c+dir; if(n>max) n=0; if(n<0) n=max; t.scrollTo({left:n*w,behavior:'smooth'}); window._pause=Date.now()+10000; }
+    function renderNews(){
+      const all=window._news||[], f=window._nf||'Todas';
+      const srcs=['Todas',...new Set(all.map(n=>n.s))];
+      const list=all.filter(n=>f==='Todas'||n.s===f); window._nl=list;
+      const hero=list.slice(0,5), rest=list.slice(5);
+      const tabs=srcs.map(x=>`<button class="ie-tab ${x===f?'on':''}" data-s="${esc(x)}" onclick="window._nf=this.dataset.s;renderNews()">${esc(x)}</button>`).join('');
+      const slides=hero.map((n,i)=>`<div class="ie-slide" onclick="newsGo(${i})">${iePhoto(n,i)}<div class="ie-cap"><span class="ie-src">${esc(n.s)}${ago(n.d)?' · '+ago(n.d):''}</span><h4>${esc(n.t)}</h4><span class="ie-more">Ler notícia <i class="fa-solid fa-arrow-right"></i></span></div></div>`).join('');
+      const dots=hero.map((_,i)=>`<b class="${i?'':'on'}"></b>`).join('');
+      const strip=rest.length?`<div class="ie-sub">Mais notícias</div><div class="ie-strip" id="ieStrip">${rest.map((n,j)=>`<div class="ie-mini" onclick="newsGo(${j+5})"><div class="ph">${iePhoto(n,j+5)}</div><p>${esc(n.t)}</p></div>`).join('')}</div>`:'';
+      document.getElementById('newsList').innerHTML=`<div class="ie-tabs">${tabs}</div><div class="ie-hero"><div class="ie-track" id="ieTrack">${slides}</div><button class="ie-nav l" onclick="ieGo(-1)"><i class="fa-solid fa-chevron-left"></i></button><button class="ie-nav r" onclick="ieGo(1)"><i class="fa-solid fa-chevron-right"></i></button><div class="ie-dots" id="ieDots">${dots}</div></div>${strip}`;
+      const t=document.getElementById('ieTrack'); if(!t) return;
+      dragScroll(t); const s=document.getElementById('ieStrip'); if(s) dragScroll(s);
+      t.addEventListener('scroll',()=>{ const i=Math.round(t.scrollLeft/t.clientWidth); document.querySelectorAll('#ieDots b').forEach((d,k)=>d.classList.toggle('on',k===i)); },{passive:true});
+      clearInterval(window._ct); window._ct=setInterval(()=>{ if(Date.now()<(window._pause||0)||document.getElementById('view-browser').classList.contains('hidden')) return; ieGo(1); window._pause=0; },5000);
+    }
+    function firstImg(h){ const m=/<img[^>]+src=["']([^"']+)["']/i.exec(h||''); return m?m[1]:''; }
+    async function fetchNews(force){
+      if(!force&&window._news&&window._news.length) return window._news;
+      if(PN_API){ try{ const r=await fetch(PN_API.replace(/\/$/,'')+'/api/news?category=todas'); if(r.ok){ const j=await r.json(); if(j.success&&(j.news||[]).length){ window._news=j.news.map(n=>({t:n.title,l:n.link,d:n.date||'',img:n.image||'',s:n.source||'Notícias'})); return window._news; } } }catch(e){} }
+      const feeds=[['Anvisa','https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS'],['Agência Brasil','https://agenciabrasil.ebc.com.br/rss/saude/feed.xml'],['g1 Saúde','https://g1.globo.com/rss/g1/saude/']];
+      const res=await Promise.all(feeds.map(async([s,f])=>{ try{ const r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f)); const j=await r.json(); return (j.items||[]).slice(0,8).map(i=>{ const enc=i.enclosure&&i.enclosure.link&&/\.(jpe?g|png|webp|gif)(\?|$)/i.test(i.enclosure.link)?i.enclosure.link:''; return {t:i.title,l:i.link,d:i.pubDate||'',img:i.thumbnail||enc||firstImg(i.content)||firstImg(i.description),s}; }); }catch(e){ return []; } }));
+      const all=[].concat(...res).sort((a,b)=>ts(b.d)-ts(a.d));
+      if(all.length) window._news=all;
+      return all;
+    }
+    async function loadNews(){
+      const box=document.getElementById('newsList'); box.innerHTML='<p class="text-center text-gray-400 text-sm py-6"><i class="fa-solid fa-spinner animate-spin"></i> Buscando notícias...</p>';
+      const all=await fetchNews(true);
+      if(!all.length){ box.innerHTML='<p class="text-sm text-gray-500 text-center py-3">Não foi possível carregar agora. Confira direto nos portais:</p><div class="p-3 space-y-2">'+[['Notícias da Anvisa','https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa'],['Notícias do CFF','https://www.cff.org.br/noticias'],['Saúde – Agência Brasil','https://agenciabrasil.ebc.com.br/saude']].map(x=>`<a href="#" onclick="openExt('${x[1]}');return false" class="brw-card text-sm font-bold text-blue-800"><i class="fa-solid fa-newspaper"></i> ${x[0]}</a>`).join('')+'</div>'; return; }
+      window._news=all; window._nf='Todas'; renderNews();
+    }
+    function readSet(){ try{ return new Set(JSON.parse(localStorage.getItem('readNews')||'[]')); }catch(e){ return new Set(); } }
+    function saveRead(st){ try{ localStorage.setItem('readNews',JSON.stringify([...st].slice(-300))); }catch(e){} }
+    function updateBadge(){ const all=window._news||[], rd=readSet(), n=all.filter(x=>!rd.has(x.l)).length; const b=document.getElementById('feedBadge'); if(!b) return; b.textContent=n>9?'9+':n; b.classList.toggle('hidden',!n); }
+    /* URL do servidor Node (server.js). Deixe vazio para buscar direto das fontes, sem servidor. Ex.: 'https://SEU-SERVIDOR.com' */
+    const PN_API='';
+    const PN_CATS={
+      farmacologia:/farmacolog|farm[aá]c|princ[ií]pio ativo|dose|tratamento|terapia/i,
+      medicamentos:/medicament|rem[eé]dio|f[aá]rmaco|receita|bula|gen[eé]rico|antibi[oó]tic|vacina|insulina/i,
+      anvisa:/anvisa|vigil[aâ]ncia sanit/i,
+      pesquisas:/pesquisa|estudo|cient|descoberta|ensaio cl[ií]nico|universidade/i,
+      hospitalar:/hospital|\buti\b|interna[cç]|cl[ií]nic|sus\b/i
+    };
+    const PN_LABEL={farmacologia:'Farmacologia',medicamentos:'Medicamentos',anvisa:'Anvisa',pesquisas:'Pesquisas',hospitalar:'Farmácia Hospitalar'};
+    function pnMatch(n,c){ return PN_CATS[c].test((n.t||'')+' '+(n.s||'')); }
+    function pnLabel(n){ const k=Object.keys(PN_CATS).find(c=>pnMatch(n,c)); return k?PN_LABEL[k]:'Saúde'; }
+    function pnCat(btn){ document.querySelectorAll('#pnCats .pn-cat').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); window._pnc=btn.dataset.c; renderFeed(); }
+    function pnDate(d){ const t=ts(d); return t?new Date(t).toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'}):'Data não informada'; }
+    function feedOpen(i){ const n=(window._pl||[])[i]; if(!n) return; const st=readSet(); st.add(n.l); saveRead(st); renderFeed(); updateBadge(); if(n.l) openExt(n.l); }
+    function feedReadAll(){ const st=readSet(); (window._news||[]).forEach(n=>st.add(n.l)); saveRead(st); renderFeed(); updateBadge(); }
+    function renderFeed(){
+      const all=window._news||[], rd=readSet(), c=window._pnc||'todas', q=(document.getElementById('pnSearch').value||'').trim().toLowerCase();
+      const list=all.filter(n=>(c==='todas'||pnMatch(n,c))&&(!q||(n.t||'').toLowerCase().includes(q))); window._pl=list;
+      const feat=document.getElementById('pnFeat'), box=document.getElementById('pnList'), msg=document.getElementById('pnMsg');
+      feat.innerHTML=''; box.innerHTML=''; msg.textContent='';
+      if(!list.length){ msg.textContent=all.length?'Nenhuma notícia encontrada.':''; return; }
+      const f=list[0];
+      feat.innerHTML=`<article class="pn-feat ${rd.has(f.l)?'pn-read':''}" onclick="feedOpen(0)">${iePhoto(f,0)}<div class="pn-fc"><span class="pn-fl">DESTAQUE</span><h3>${esc(f.t)}</h3><p class="pn-meta">${esc(f.s)} · ${pnDate(f.d)}</p></div></article>`;
+      box.innerHTML=list.slice(1).map((n,k)=>`<article class="pn-card ${rd.has(n.l)?'pn-read':''}" onclick="feedOpen(${k+1})"><div class="pn-thumb">${iePhoto(n,k+1)}</div><div class="pn-cc"><div><p class="pn-ct">${pnLabel(n)}</p><h4>${esc(n.t)}</h4></div><p class="pn-meta">${esc(n.s)} · ${pnDate(n.d)}</p></div></article>`).join('');
+    }
+    async function loadFeed(force){
+      const msg=document.getElementById('pnMsg'), err=document.getElementById('pnErr'), btn=document.getElementById('pnRefresh');
+      err.classList.add('hidden'); btn.disabled=true;
+      if(force||!(window._news||[]).length) msg.innerHTML='<i class="fa-solid fa-spinner animate-spin"></i> Carregando notícias...';
+      const all=await fetchNews(force); btn.disabled=false;
+      if(!all.length){ msg.textContent=''; err.classList.remove('hidden'); return; }
+      renderFeed(); updateBadge();
+    }
+    setTimeout(()=>{ fetchNews().then(updateBadge); },1500);
+    function applyTheme(d){ document.documentElement.classList.toggle('dark',d); const b=document.getElementById('theme-btn'); if(b) b.innerHTML=d?'<i class="fa-solid fa-sun"></i>':'<i class="fa-solid fa-moon"></i>'; document.querySelector('meta[name=theme-color]')||document.head.insertAdjacentHTML('beforeend','<meta name="theme-color" content="#1d4ed8">'); }
+    function toggleTheme(){ const d=!document.documentElement.classList.contains('dark'); try{localStorage.setItem('theme',d?'dark':'light')}catch(e){} applyTheme(d); }
+    (function(){ let t=null; try{t=localStorage.getItem('theme')}catch(e){} applyTheme(t?t==='dark':window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches); renderEngines(); renderSites(); })();
+    const _sw=switchTab; switchTab=function(n){ _sw(n); if(n==='browser'&&!document.getElementById('newsList').children.length) loadNews(); if(n==='feed') loadFeed(); window.scrollTo({top:0}); };
+  </script>
+</body>
+</html>
