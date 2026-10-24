@@ -12,7 +12,8 @@ const parser = new Parser({
 const FEEDS = [
   { source: "Anvisa", url: "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS" },
   { source: "Agência Brasil", url: "https://agenciabrasil.ebc.com.br/rss/saude/feed.xml" },
-  { source: "g1 Saúde", url: "https://g1.globo.com/rss/g1/saude/" }
+  { source: "g1 Saúde", url: "https://g1.globo.com/rss/g1/saude/" },
+  { source: "Ministério da Saúde", url: "https://www.gov.br/saude/pt-br/assuntos/noticias/RSS" }
 ];
 
 const CATS = {
@@ -46,10 +47,11 @@ async function ogImage(url) {
   } catch (e) { return ""; }
 }
 
-let cache = { at: 0, news: [] };
+let cache = { at: 0, news: [], errors: {} };
 
 async function loadAll() {
   if (Date.now() - cache.at < 10 * 60 * 1000 && cache.news.length) return cache.news;
+  const errors = {};
   const res = await Promise.all(FEEDS.map(async f => {
     try {
       const feed = await parser.parseURL(f.url);
@@ -57,13 +59,13 @@ async function loadAll() {
         title: i.title, link: i.link, image: imageOf(i),
         date: i.isoDate || i.pubDate || "", source: f.source
       }));
-    } catch (e) { console.error(f.source, e.message); return []; }
+    } catch (e) { console.error(f.source, e.message); errors[f.source] = e.message; return []; }
   }));
   const news = [].concat(...res).sort((a, b) => new Date(b.date) - new Date(a.date));
   await Promise.all(news.map(async n => {
     if (isLogo(n.image)) n.image = n.link ? await ogImage(n.link) : "";
   }));
-  cache = { at: Date.now(), news };
+  cache = { at: Date.now(), news, errors };
   return cache.news;
 }
 
@@ -74,7 +76,7 @@ app.get("/api/news", async (req, res) => {
     const cat = String(req.query.category || "todas").toLowerCase();
     let news = await loadAll();
     if (CATS[cat]) news = news.filter(n => CATS[cat].test(n.title + " " + n.source));
-    res.json({ success: true, news });
+    res.json({ success: true, news, errors: cache.errors });
   } catch (e) { res.status(500).json({ success: false, error: e.message }); }
 });
 
