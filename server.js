@@ -10,10 +10,8 @@ const parser = new Parser({
 });
 
 const FEEDS = [
-  { source: "Anvisa", url: "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS" },
   { source: "Agência Brasil", url: "https://agenciabrasil.ebc.com.br/rss/saude/feed.xml" },
-  { source: "g1 Saúde", url: "https://g1.globo.com/rss/g1/saude/" },
-  { source: "Ministério da Saúde", url: "https://www.gov.br/saude/pt-br/assuntos/noticias/RSS" }
+  { source: "g1 Saúde", url: "https://g1.globo.com/rss/g1/saude/" }
 ];
 
 const CATS = {
@@ -31,6 +29,21 @@ function imageOf(i) {
   const m = /<img[^>]+src=["']([^"']+)["']/i.exec(i["content:encoded"] || i.content || "");
   return m ? m[1] : "";
 }
+
+async function readFeed(url) {
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 10000);
+  try {
+    const r = await fetch(url, {
+      signal: ctl.signal,
+      headers: { "User-Agent": "Mozilla/5.0 (compatible; PharmaxyNews/1.0)", "Accept": "application/rss+xml, application/xml, text/xml, */*" }
+    });
+    if (!r.ok) throw new Error("Status code " + r.status);
+    return await parser.parseString(await r.text()); // fetch já descompacta gzip
+  } finally { clearTimeout(t); }
+}
+
+const lastGood = {}; // guarda a última leitura boa de cada fonte
 
 const isLogo = u => !u || /logo|\.svg(\?|$)/i.test(u);
 
@@ -54,12 +67,14 @@ async function loadAll() {
   const errors = {};
   const res = await Promise.all(FEEDS.map(async f => {
     try {
-      const feed = await parser.parseURL(f.url);
-      return feed.items.slice(0, 10).map(i => ({
+      const feed = await readFeed(f.url);
+      const items = feed.items.slice(0, 10).map(i => ({
         title: i.title, link: i.link, image: imageOf(i),
         date: i.isoDate || i.pubDate || "", source: f.source
       }));
-    } catch (e) { console.error(f.source, e.message); errors[f.source] = e.message; return []; }
+      lastGood[f.source] = items;
+      return items;
+    } catch (e) { console.error(f.source, e.message); errors[f.source] = e.message; return lastGood[f.source] || []; }
   }));
   const news = [].concat(...res).sort((a, b) => new Date(b.date) - new Date(a.date));
   await Promise.all(news.map(async n => {

@@ -1152,7 +1152,7 @@
     function firstImg(h){ const m=/<img[^>]+src=["']([^"']+)["']/i.exec(h||''); return m?m[1]:''; }
     async function fetchNews(force){
       if(!force&&window._news&&window._news.length) return window._news;
-      if(PN_API){ try{ const r=await fetch(PN_API.replace(/\/$/,'')+'/api/news?category=todas'); if(r.ok){ const j=await r.json(); if(j.success&&(j.news||[]).length){ window._news=j.news.map(n=>({t:n.title,l:n.link,d:n.date||'',img:n.image||'',s:n.source||'Notícias'})); return window._news; } } }catch(e){} }
+      if(PN_API){ try{ const r=await fetch(PN_API.replace(/\/$/,'')+'/api/news?category=todas'); if(r.ok){ const j=await r.json(); if(j.success&&(j.news||[]).length){ window._news=j.news.map(n=>({t:n.title,l:n.link,d:n.date||'',img:(/logo|\.svg(\?|$)/i.test(n.image||'')?'':n.image||''),s:n.source||'Notícias'})); return window._news; } } }catch(e){} }
       const feeds=[['Anvisa','https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS'],['Agência Brasil','https://agenciabrasil.ebc.com.br/rss/saude/feed.xml'],['g1 Saúde','https://g1.globo.com/rss/g1/saude/']];
       const res=await Promise.all(feeds.map(async([s,f])=>{ try{ const r=await fetch('https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent(f)); const j=await r.json(); return (j.items||[]).slice(0,8).map(i=>{ const enc=i.enclosure&&i.enclosure.link&&/\.(jpe?g|png|webp|gif)(\?|$)/i.test(i.enclosure.link)?i.enclosure.link:''; return {t:i.title,l:i.link,d:i.pubDate||'',img:i.thumbnail||enc||firstImg(i.content)||firstImg(i.description),s}; }); }catch(e){ return []; } }));
       const all=[].concat(...res).sort((a,b)=>ts(b.d)-ts(a.d));
@@ -1169,7 +1169,7 @@
     function saveRead(st){ try{ localStorage.setItem('readNews',JSON.stringify([...st].slice(-300))); }catch(e){} }
     function updateBadge(){ const all=window._news||[], rd=readSet(), n=all.filter(x=>!rd.has(x.l)).length; const b=document.getElementById('feedBadge'); if(!b) return; b.textContent=n>9?'9+':n; b.classList.toggle('hidden',!n); }
     /* URL do servidor Node (server.js). Deixe vazio para buscar direto das fontes, sem servidor. Ex.: 'https://SEU-SERVIDOR.com' */
-    const PN_API='';
+    const PN_API='https://pharmaxy-news.onrender.com';
     const PN_CATS={
       farmacologia:/farmacolog|farm[aá]c|princ[ií]pio ativo|dose|tratamento|terapia/i,
       medicamentos:/medicament|rem[eé]dio|f[aá]rmaco|receita|bula|gen[eé]rico|antibi[oó]tic|vacina|insulina/i,
