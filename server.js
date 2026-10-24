@@ -10,8 +10,10 @@ const parser = new Parser({
 });
 
 const FEEDS = [
+  { source: "Anvisa", url: "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS" },
   { source: "Agência Brasil", url: "https://agenciabrasil.ebc.com.br/rss/saude/feed.xml" },
-  { source: "g1 Saúde", url: "https://g1.globo.com/rss/g1/saude/" }
+  { source: "g1 Saúde", url: "https://g1.globo.com/rss/g1/saude/" },
+  { source: "Ministério da Saúde", url: "https://www.gov.br/saude/pt-br/assuntos/noticias/RSS" }
 ];
 
 const CATS = {
