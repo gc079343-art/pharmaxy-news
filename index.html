@@ -1385,7 +1385,7 @@
     function updateBadge(){ const all=window._news||[], rd=readSet(), n=all.filter(x=>!rd.has(x.l)).length; const mb=document.getElementById('menuBadge'), md=document.getElementById('menuDot'); if(mb){ mb.textContent=n>9?'9+':n; mb.classList.toggle('hidden',!n); } if(md) md.classList.toggle('hidden',!n);
       const b=document.getElementById('feedBadge'); if(!b) return; b.textContent=n>9?'9+':n; b.classList.toggle('hidden',!n); }
     /* URL do servidor Node (server.js). Deixe vazio para buscar direto das fontes, sem servidor. Ex.: 'https://SEU-SERVIDOR.com' */
-    const PN_API='';
+    const PN_API='https://pharmaxy-news.onrender.com';
     const PN_CATS={
       farmacologia:/farmacolog|farm[aá]c|princ[ií]pio ativo|dose|tratamento|terapia/i,
       medicamentos:/medicament|rem[eé]dio|f[aá]rmaco|receita|bula|gen[eé]rico|antibi[oó]tic|vacina|insulina/i,
@@ -1445,7 +1445,7 @@
     })();
 
     /* ===== P.E: assistente de medicamentos ===== */
-    const PE_API_URL=''; // URL do servidor do P.E (ex.: 'https://seu-servidor.com/api/pe'). Vazio = responde só com o banco do app.
+    const PE_API_URL='https://pharmaxy-news.onrender.com/api/pe'; // URL do servidor do P.E (ex.: 'https://seu-servidor.com/api/pe'). Vazio = responde só com o banco do app.
     const peHist=[];
     const peN=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
     const PE_STOP=new Set('de da do das dos com para gel creme pomada spray oral colirio comprimido capsula solucao suspensao injetavel ampola frasco adesivo vitamina insulina gotas xarope'.split(' '));
