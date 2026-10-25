@@ -7,10 +7,14 @@ const Parser = require('rss-parser');
 
 const PORT = process.env.PORT || 3000;
 const API_KEY = process.env.ANTHROPIC_API_KEY;
-const MODEL = process.env.MODEL || 'claude-sonnet-5-5';
+const OPENAI_KEY = process.env.OPENAI_API_KEY;
+// Escolhe o provedor pela chave que existir (ou force com PROVIDER=openai / anthropic)
+const PROVIDER = process.env.PROVIDER || (OPENAI_KEY && !API_KEY ? 'openai' : 'anthropic');
+const HAS_KEY = PROVIDER === 'openai' ? !!OPENAI_KEY : !!API_KEY;
+const MODEL = process.env.MODEL || (PROVIDER === 'openai' ? 'gpt-5.6' : 'claude-sonnet-5-5');
 const WEB_SEARCH = (process.env.WEB_SEARCH || 'on') !== 'off';
 const DAILY_LIMIT = parseInt(process.env.DAILY_LIMIT || '1500', 10);
-if (!API_KEY) console.warn('⚠️  Defina ANTHROPIC_API_KEY (a chave nunca vai dentro do app).');
+if (!HAS_KEY) console.warn('⚠️  Defina OPENAI_API_KEY ou ANTHROPIC_API_KEY (a chave nunca vai dentro do app).');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -85,18 +89,47 @@ async function askClaude(system, messages, useSearch) {
   return { reply: text.trim(), sources: [...sources].slice(0, 4).map(([url, title]) => ({ url, title })) };
 }
 
+async function askOpenAI(system, messages, useSearch, model = MODEL) {
+  const body = { model, instructions: system, input: messages, max_output_tokens: 2500 };
+  if (useSearch) body.tools = [{ type: 'web_search' }];
+  const r = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', authorization: 'Bearer ' + OPENAI_KEY },
+    body: JSON.stringify(body),
+    signal: AbortSignal.timeout(60_000)
+  });
+  if (!r.ok) {
+    const t = (await r.text()).slice(0, 300);
+    if (model !== 'gpt-4o-mini' && !process.env.MODEL && /model/i.test(t)) return askOpenAI(system, messages, useSearch, 'gpt-4o-mini');
+    throw new Error('API ' + r.status + ': ' + t);
+  }
+  const j = await r.json();
+  let text = '';
+  const sources = new Map();
+  for (const it of j.output || []) {
+    if (it.type !== 'message') continue;
+    for (const c of it.content || []) {
+      if (c.type !== 'output_text') continue;
+      text += c.text;
+      for (const a of c.annotations || []) if (a.type === 'url_citation' && a.url && !sources.has(a.url)) sources.set(a.url, a.title || a.url);
+    }
+  }
+  return { reply: text.trim(), sources: [...sources].slice(0, 4).map(([url, title]) => ({ url, title })) };
+}
+const ask = (...a) => (PROVIDER === 'openai' ? askOpenAI(...a) : askClaude(...a));
+
 app.post('/api/pe', async (req, res) => {
   try {
-    if (!API_KEY) return res.status(500).json({ error: 'servidor sem chave da IA' });
+    if (!HAS_KEY) return res.status(500).json({ error: 'servidor sem chave da IA' });
     if (!dailyOk()) return res.status(429).json({ error: 'limite diário atingido' });
     const message = String(req.body.message || '').trim().slice(0, 2000);
     if (!message) return res.status(400).json({ error: 'mensagem vazia' });
     const system = buildSystem(req.body.settings, req.body.protocols);
     const messages = cleanHistory(req.body.history, message);
     let out;
-    try { out = await askClaude(system, messages, WEB_SEARCH); }
+    try { out = await ask(system, messages, WEB_SEARCH); }
     catch (e) {                                  // busca não habilitada no Console? tenta sem busca
-      if (WEB_SEARCH && /web.?search/i.test(e.message)) out = await askClaude(system, messages, false); else throw e;
+      if (WEB_SEARCH && /web.?search/i.test(e.message)) out = await ask(system, messages, false); else throw e;
     }
     if (!out.reply) return res.status(502).json({ error: 'resposta vazia' });
     res.json(out);
@@ -158,6 +191,6 @@ app.get('/api/news', async (req, res) => {
   } catch (e) { console.error('[news]', e.message); res.status(502).json({ success: false, news: [] }); }
 });
 
-app.get('/health', (req, res) => res.json({ ok: true, ia: !!API_KEY, modelo: MODEL, busca: WEB_SEARCH }));
+app.get('/health', (req, res) => res.json({ ok: true, ia: HAS_KEY, provedor: PROVIDER, modelo: MODEL, busca: WEB_SEARCH }));
 app.get('/', (req, res) => res.send('Servidor do Pharmacy Explore no ar.'));
 app.listen(PORT, () => console.log('Servidor na porta ' + PORT));
