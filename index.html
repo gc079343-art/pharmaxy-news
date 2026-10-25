@@ -161,7 +161,7 @@
     .mg-btns button.on{background:#1b3360;color:#fff;border-color:#1b3360}.dark .mg-btns button.on{background:#fff;color:#000;border-color:#fff}
     .mg-voice{position:fixed;inset:0;z-index:45;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#fff;color:#1b3360;padding:24px}.dark .mg-voice{background:#000;color:#fff}
     .mg-voice.hidden{display:none}.mg-x{position:absolute;top:calc(env(safe-area-inset-top) + 14px);right:14px}
-    #mgLogo{width:min(88vw,520px);height:auto;overflow:visible;--g:.2}.mg-word{fill:currentColor;opacity:.92}
+    #mgLogo{width:min(88vw,520px);height:auto;overflow:visible}.mg-word{fill:currentColor;opacity:.92}
     .mg-star{fill:currentColor;stroke:none;opacity:calc(.55 + var(--g)*.45);filter:drop-shadow(0 0 calc(2px + var(--g)*22px) currentColor)}
     .mg-state{font-size:13px;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin:0}.mg-cap{max-width:34ch;text-align:center;font-size:15px;line-height:1.4;min-height:4.4em;margin:0;opacity:.9}
     .mg-ctl{display:flex;gap:16px;margin-top:6px}.mg-ctl button{width:64px;height:64px;border-radius:50%;border:0;background:#1b3360;color:#fff;font-size:22px}.dark .mg-ctl button{background:#fff;color:#000}
@@ -216,6 +216,15 @@
     .mgh-view{display:flex;flex-direction:column;gap:10px;margin:14px 0}
     .mg-btns{flex-wrap:nowrap}.mg-btns button{width:38px!important;height:38px!important}
   </style>
+<link rel="preconnect" href="https://wsrv.nl" crossorigin>
+<style>
+.ie-ph img{opacity:0;transition:opacity .35s}.ie-ph img.ld{opacity:1}
+.mg-voice{--g:.2;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#mgLogo{width:min(74vw,400px);height:auto;position:relative;z-index:1}
+.mg-halo{position:absolute;width:86vmin;height:86vmin;border-radius:50%;background:radial-gradient(circle,currentColor 0%,transparent 62%);opacity:calc(var(--g)*.22);pointer-events:none}
+.mg-toast{position:absolute;left:16px;right:16px;bottom:calc(env(safe-area-inset-bottom) + 28px);margin:0;text-align:center;font-size:14px;opacity:0;transition:opacity .3s;pointer-events:none}.mg-toast.on{opacity:.9}
+.pe-b.a{animation:fadeIn .35s ease}
+</style>
 </head>
 <body class="min-h-screen pb-24">
 
@@ -254,6 +263,7 @@
     <div class="bg-gradient-to-r from-blue-700 to-blue-400 rounded-3xl p-6 text-white shadow-lg">
       <h2 class="text-2xl font-bold mb-2">Explore informações farmacêuticas</h2>
       <p class="opacity-90">Acesse medicamentos, categorias e dados importantes de forma rápida e inteligente.</p>
+      <div class="mt-4 inline-flex items-center gap-3 bg-white/20 rounded-2xl px-4 py-2.5"><i class="fa-solid fa-pills text-lg"></i><span class="text-sm"><b id="homeMedCount" class="text-2xl align-middle">0</b> medicamentos no banco de dados</span></div>
     </div>
 
     <!-- CARD DE PROMPT DE DOWNLOAD DA INTERNET -->
@@ -507,7 +517,7 @@
     <main id="view-pe" class="app-view hidden fade-in">
     <div class="pe-wrap">
       <div class="mg-top"><div class="mg-id"><b>MAGI</b><small id="mgMood"></small></div>
-        <div class="mg-btns"><button id="mgVoiceBtn" onclick="mgToggleVoice()" aria-label="Ligar ou desligar o modo voz"><i class="fa-solid fa-microphone-slash"></i></button><button onclick="mgNewChat()" aria-label="Nova conversa"><i class="fa-solid fa-plus"></i></button><button onclick="mgOpenHist()" aria-label="Histórico de conversas"><i class="fa-solid fa-clock-rotate-left"></i></button><button onclick="mgOpenCfg()" aria-label="Configurações do MAGI"><i class="fa-solid fa-sliders"></i></button></div></div>
+        <div class="mg-btns"><button onclick="mgNewChat()" aria-label="Nova conversa"><i class="fa-solid fa-plus"></i></button><button onclick="mgOpenHist()" aria-label="Histórico de conversas"><i class="fa-solid fa-clock-rotate-left"></i></button><button onclick="mgOpenCfg()" aria-label="Configurações do MAGI"><i class="fa-solid fa-sliders"></i></button></div></div>
       <div id="peMsgs" class="pe-msgs"></div>
       <div class="pe-chips" id="peChips"></div>
       <form class="pe-form" onsubmit="peSend(event)">
@@ -516,13 +526,7 @@
       </form>
     </div>
   </main>
-  <div id="mgVoice" class="mg-voice hidden">
-    <button class="mg-x" onclick="mgToggleVoice(false)" aria-label="Desligar voz"><i class="fa-solid fa-xmark"></i></button>
-    <svg id="mgLogo" viewBox="17 129 1516 380" aria-label="Pharmacy Explore"><g class="mg-word"><use href="#peWord"/></g><use href="#peStar" class="mg-star"/></svg>
-    <p id="mgState" class="mg-state">Ouvindo…</p><p id="mgCap" class="mg-cap"></p>
-    <div class="mg-ctl"><button onclick="mgMicTap()" aria-label="Falar ou pausar"><i class="fa-solid fa-microphone"></i></button><button onclick="mgStopSpeak()" aria-label="Parar de falar"><i class="fa-solid fa-stop"></i></button></div>
-  </div>
-  <div id="mgHist" class="mg-sheet hidden"><div class="mg-card"><div class="mg-sh"><b id="mgHistTitle">Histórico de conversas</b><button onclick="mgCloseHist()" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></div><div id="mgHistBody"></div></div></div>
+    <div id="mgHist" class="mg-sheet hidden"><div class="mg-card"><div class="mg-sh"><b id="mgHistTitle">Histórico de conversas</b><button onclick="mgCloseHist()" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></div><div id="mgHistBody"></div></div></div>
   <div id="mgCfg" class="mg-sheet hidden"><div class="mg-card"><div class="mg-sh"><b>Configurações do MAGI</b><button onclick="mgCloseCfg()" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button></div><div id="mgCfgBody"></div></div></div>
   <div id="detailsModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-3xl w-full max-w-lg max-h-[85vh] overflow-y-auto p-6 relative shadow-2xl">
@@ -1321,10 +1325,12 @@
     const NEWS_TTL=5*60*1000;
     const NEWS_FEEDS=[
       ['Anvisa','https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/RSS'],
-      ['Agência Brasil','https://agenciabrasil.ebc.com.br/rss/saude/feed.xml'],
+      ['Ministério da Saúde','https://www.gov.br/saude/pt-br/assuntos/noticias/RSS'],
+      ['Agência Brasil Saúde','https://agenciabrasil.ebc.com.br/rss/saude/feed.xml'],
       ['g1 Saúde','https://g1.globo.com/rss/g1/saude/'],
-      ['Google Notícias','https://news.google.com/rss/search?q=anvisa+OR+farm%C3%A1cia+OR+medicamentos+when:7d&hl=pt-BR&gl=BR&ceid=BR:pt-419'],
-      ['Google Notícias','https://news.google.com/rss/search?q=sa%C3%BAde+p%C3%BAblica+when:3d&hl=pt-BR&gl=BR&ceid=BR:pt-419']
+      ['Google Notícias','https://news.google.com/rss/search?q=medicamentos+OR+anvisa+OR+farm%C3%A1cia+OR+rem%C3%A9dio+when:7d&hl=pt-BR&gl=BR&ceid=BR:pt-419'],
+      ['Google Notícias','https://news.google.com/rss/search?q=sa%C3%BAde+OR+doen%C3%A7a+OR+vacina+OR+hospital+OR+SUS+when:3d&hl=pt-BR&gl=BR&ceid=BR:pt-419'],
+      ['Google Notícias','https://news.google.com/rss/search?q=c%C3%A2ncer+OR+diabetes+OR+dengue+OR+covid+OR+gripe+OR+tratamento+when:3d&hl=pt-BR&gl=BR&ceid=BR:pt-419']
     ];
     function _tmo(p,ms){ return Promise.race([p,new Promise((_,rj)=>setTimeout(()=>rj(new Error('timeout')),ms))]); }
     function parseRss(xml,src){
@@ -1476,7 +1482,7 @@
     }
     function peBubble(cls,html){ const b=document.createElement('div'); b.className='pe-b '+cls; b.innerHTML=html; const c=document.getElementById('peMsgs'); c.appendChild(b); b.scrollIntoView({block:'end',behavior:'smooth'}); return b; }
     function peWeb(b,q){ const w=document.createElement('div'); w.className='pe-web'; [['Google','Google'],['Bulário','Bula (ANVISA)'],['PubMed','PubMed'],['SciELO','SciELO']].forEach(([k,l])=>{ if(!ENG[k]) return; const x=document.createElement('button'); x.type='button'; x.innerHTML='<i class="fa-solid fa-magnifying-glass"></i> '+l; x.onclick=()=>openExt(ENG[k]+encodeURIComponent(q)); w.appendChild(x); }); b.appendChild(w); }
-    async function peAsk(q){ const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),25000);
+    async function peAsk(q){ const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),7000);
       try{ const r=await fetch(PE_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:peHist.slice(-8)}),signal:ctl.signal}); clearTimeout(to); if(!r.ok) return null; return await r.json(); }catch(e){ clearTimeout(to); return null; } }
     document.getElementById('peMsgs').addEventListener('click',ev=>{ const a=ev.target.closest('a[data-u]'); if(a){ ev.preventDefault(); openExt(a.dataset.u); } });
 
@@ -1546,9 +1552,7 @@
         mgSay(mgFmt('',[[1,'Modo voz ligado. Pode falar, eu estou ouvindo.']],{plain:true})); }
       else{ MG.s.voice=false; mgStopListen(); mgStopSpeak(); ov.classList.add('hidden'); btn.classList.remove('on'); btn.innerHTML='<i class="fa-solid fa-microphone-slash"></i>'; }
     }
-    (function loop(t){ requestAnimationFrame(loop); const ov=document.getElementById('mgVoice'); if(!ov||ov.classList.contains('hidden')) return; mgEnv*=.9;
-      let g=.2+.12*Math.sin(t/700); if(mgSpeaking) g=Math.min(1,.4+.18*Math.sin(t/120)+mgEnv*.5); else if(mgListening) g=.28+.14*Math.sin(t/450);
-      document.getElementById('mgLogo').style.setProperty('--g',g.toFixed(3)); })(0);
+    
     if('speechSynthesis' in window) speechSynthesis.onvoiceschanged=()=>{ if(!document.getElementById('mgCfg').classList.contains('hidden')) mgRenderCfg(); };
 
     /* ===== MAGI: primeiros socorros, sintomas, bula e receita ===== */
@@ -1669,8 +1673,8 @@
     function mgClass(n){ const cats=[...new Set(medicines.map(m=>m.category))]; const tk=n.split(/[^a-z]+/).filter(t=>t.length>=6); const c=cats.find(c=>{ const nc=N(c); return tk.some(t=>nc.includes(t.slice(0,6)))||nc.split(/[^a-z]+/).some(w=>w.length>=6&&n.includes(w.slice(0,6))); }); if(!c) return null;
       const names=[...new Set(medicines.filter(m=>m.category===c).map(m=>m.name))].slice(0,10), info=(MED_CATS[c]||[]);
       return mgFmt('Aula: '+c,[[1,(info[0]?'<b>Para que servem:</b> '+esc(info[0]):'Classe de medicamentos do app.')],[2,'<b>Exemplos:</b> '+names.map(esc).join(', ')],[3,info[1]?'<b>Riscos gerais:</b> '+esc(info[1]):''],[5,DISC]]); }
-    async function mgServer(q){ if(!PE_API_URL||!navigator.onLine) return null; const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),25000);
-      try{ const r=await fetch(PE_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:peHist.slice(-8),settings:MG.s,protocols:MG.protocols}),signal:ctl.signal}); clearTimeout(to); if(!r.ok) return null; const j=await r.json(); if(!j.reply) return null;
+    async function mgServer(q){ if(!PE_API_URL||!navigator.onLine) return null; const ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),7000);
+      try{ const r=await fetch(PE_API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q,history:peHist.slice(-8),settings:MG.s,protocols:MG.protocols,persona:MAGI_PERSONA,devMode:!!window.mgDev}),signal:ctl.signal}); clearTimeout(to); if(!r.ok) return null; const j=await r.json(); if(!j.reply) return null;
         let h=esc(j.reply).replace(/\n/g,'<br>'); if((j.sources||[]).length) h+='<hr><small>Fontes:</small><br>'+j.sources.slice(0,4).map(s=>`<a href="#" data-u="${esc(s.url)}" style="text-decoration:underline">${esc(s.title||s.url)}</a>`).join('<br>'); return h+'<br><small>'+DISC+'</small>'; }catch(e){ clearTimeout(to); return null; } }
     async function mgDialog(n,q){
       const d=MG.dlg; if(/^(cancelar|deixa pra la|esquece|sair|parar quiz)/.test(n)){ MG.dlg=null; mgSay(mgFmt('',[[1,'Tudo bem, cancelado.']],{plain:true})); return true; }
@@ -1744,14 +1748,11 @@
         '<h4>Nível de detalhe</h4>'+seg('detail',['mais direto','mais detalhado'],s.detail)+
         '<h4>Estilo da resposta</h4>'+seg('human',['robótico','humanizado'],s.human)+
         '<h4>Humor</h4><div class="mg-chips">'+Object.keys(MOODS).map(m=>`<button class="${m===s.mood?'on':''}" onclick="mgSet('mood','${m}')">${m}</button>`).join('')+'</div>'+
-        '<h4>Voz</h4><label class="mg-row">Velocidade <input type="range" min=".6" max="1.6" step=".05" value="'+s.rate+'" oninput="mgSet(\'rate\',this.value)"></label><label class="mg-row">Tom <input type="range" min=".6" max="1.4" step=".05" value="'+s.pitch+'" oninput="mgSet(\'pitch\',this.value)"></label>'+
-        '<label class="mg-row">Voz <select onchange="mgSet(\'voiceName\',this.value);mgTest()"><option value="">Automática (melhor em português)</option>'+vs.map(v=>`<option ${v.name===s.voiceName?'selected':''}>${esc(v.name)}</option>`).join('')+'</select></label>'+
-        '<label class="mg-row"><span>Falar respostas também no modo texto</span><input type="checkbox" '+(s.speakText?'checked':'')+' onchange="mgSet(\'speakText\',this.checked)"></label><button class="mg-btn" onclick="mgTest()">Testar voz</button>'+
-        '<h4>Meus protocolos</h4>'+(MG.protocols.length?MG.protocols.map(p=>`<div class="mg-proto"><div><b>${esc(p.name)}</b><br><small>${esc(p.resp)}</small></div><button onclick="mgDelProto(${p.id})" aria-label="Apagar"><i class="fa-solid fa-trash"></i></button></div>`).join(''):'<p class="mg-lbl">Nenhum ainda. Diga: “MAGI, criar protocolo …”.</p>')+
+                '<h4>Meus protocolos</h4>'+(MG.protocols.length?MG.protocols.map(p=>`<div class="mg-proto"><div><b>${esc(p.name)}</b><br><small>${esc(p.resp)}</small></div><button onclick="mgDelProto(${p.id})" aria-label="Apagar"><i class="fa-solid fa-trash"></i></button></div>`).join(''):'<p class="mg-lbl">Nenhum ainda. Diga: “MAGI, criar protocolo …”.</p>')+
         '<h4>Cópia de segurança</h4><textarea id="mgBackup" rows="3" placeholder="Cole aqui uma cópia para importar"></textarea><div class="mg-chips"><button onclick="mgExport()">Gerar e copiar</button><button onclick="mgImport()">Importar</button></div><p id="mgBkMsg" class="mg-lbl"></p>';
     }
     (function(){ const _swm=switchTab; switchTab=function(n){ _swm(n); if(n!=='pe'&&MG.s.voice) mgToggleVoice(false); }; })();
-    function mgGreet(){ mgBubble('a',mgFmt('Olá! Eu sou o MAGI',[[1,'Pergunte sobre <b>medicamentos</b>, <b>sintomas</b>, <b>primeiros socorros</b>, ou peça para eu explicar uma <b>bula</b> ou <b>receita</b>.'],[2,'Toque no microfone para conversar por voz. Diga <i>“MAGI, protocolo de configuração”</i> para ajustar o meu jeito de responder e <i>“MAGI, criar protocolo …”</i> para me ensinar frases suas.'],[1,'<small>'+DISC+'</small>']],{plain:true})); mgChips(['Primeiros socorros','Analisar bula','Explicar receita','Estou com dor de cabeça','Riscos da automedicação','Fazer um quiz']); }
+    function mgGreet(){ mgBubble('a',mgFmt('Olá! Eu sou o MAGI',[[1,'Pergunte sobre <b>medicamentos</b>, <b>sintomas</b>, <b>primeiros socorros</b>, ou peça para eu explicar uma <b>bula</b> ou <b>receita</b>.'],[2,'Diga <i>“MAGI, protocolo de configuração”</i> para ajustar o meu jeito de responder e <i>“MAGI, criar protocolo …”</i> para me ensinar frases suas.'],[1,'<small>'+DISC+'</small>']],{plain:true})); mgChips(['Primeiros socorros','Analisar bula','Explicar receita','Estou com dor de cabeça','Riscos da automedicação','Fazer um quiz']); }
     (function mgInit(){ mgLoad(); mgHead(); mgGreet(); })();
 
     /* ===== Notícias: atualização automática ===== */
@@ -1766,6 +1767,104 @@
     document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
     (function(){ const _smn=switchTab; switchTab=function(n){ _smn(n); document.querySelectorAll('#sideMenu .side-item').forEach(b=>b.classList.toggle('on',b.dataset.tab===n)); }; })();
     updateBadge();
+
+  
+/* ===== VERSÃO FINAL: notícias de saúde, imagens rápidas, contador, voz e modo desenvolvedor ===== */
+var HEALTH=/sa[uú]de|m[eé]dic|medicament|rem[eé]dio|f[aá]rmac|anvisa|vacin|imuniz|doen[cç]|v[ií]rus|infec|bact[eé]ri|antibi|hospital|\bsus\b|paciente|cirurg|tratament|terap|sintoma|diagn[oó]s|c[aâ]ncer|tumor|oncol|diabet|insulina|cardi|hipertens|press[aã]o arterial|colesterol|obesidade|nutri|alimenta[cç]|dieta|\bsono\b|ins[oô]nia|mental|depress|ansiedade|psiqui|dengue|chikungunya|zika|covid|gripe|influenza|sarampo|tubercul|\bhiv\b|\baids\b|hepatite|mal[aá]ria|epidemi|pandemi|surto|\boms\b|fiocruz|butantan|enfermag|odonto|dent[aá]|oftalm|gestan|gravidez|parto|pedi[aá]tr|alzheimer|dem[eê]ncia|\bavc\b|infarto|\buti\b|pronto-socorro|\bupa\b|asma|alergi|dermat|fisioter|vitamina|suplement|exame m[eé]dic|check-up|bem-estar|sa[uú]de/i;
+var NOTHEALTH=/futebol|campeonato|elei[cç][aãõ]|candidato|novela|\bbbb\b|celebridade|reality|bolsa de valores|cripto|\bgol\b/i;
+function isHealth(n){ const t=(n.t||''); return HEALTH.test(t)&&!NOTHEALTH.test(t); }
+function prox(u){ return 'https://wsrv.nl/?url='+encodeURIComponent(u)+'&w=640&q=72&output=webp&we'; }
+function imgFail(el){ const o=el.dataset.o||'', st=+(el.dataset.t||0), nx=[o,'https://images.weserv.nl/?url='+encodeURIComponent(o)+'&w=640&output=jpg']; if(o&&st<nx.length){ el.dataset.t=st+1; el.src=nx[st]; } else el.remove(); }
+function imgOk(el){ if(el.naturalWidth&&el.naturalWidth<80) imgFail(el); else el.classList.add('ld'); }
+function imgTag(u,i){ return '<img src="'+esc(prox(u))+'" data-o="'+esc(u)+'" '+(i<4?'loading="eager" fetchpriority="high"':'loading="lazy"')+' decoding="async" referrerpolicy="no-referrer" draggable="false" onload="imgOk(this)" onerror="imgFail(this)">'; }
+function iePhoto(n,i){ const g=['#1d4ed8,#38bdf8','#0f766e,#5eead4','#7c3aed,#c4b5fd','#be123c,#fda4af','#b45309,#fcd34d'][i%5], u=imgUrl(n.img,n.l);
+  return `<div class="ie-ph" data-nk="${esc(n.l)}" style="background:linear-gradient(135deg,${g})"><span class="ie-lbl">${esc(n.s||'')}</span><svg viewBox="${STAR_VB}" style="width:46%;max-width:90px;fill:currentColor;opacity:.85" aria-hidden="true"><use href="#peStar" style="stroke:none;stroke-dasharray:none"/></svg>${u?imgTag(u,i):''}</div>`; }
+function anyOk(ps){ return new Promise(res=>{ let n=ps.length; ps.forEach(p=>p.then(r=>{ if(r&&r.length) res(r); else if(!--n) res([]); }).catch(()=>{ if(!--n) res([]); })); }); }
+function feedItems(src,url){ const q=encodeURIComponent(url), T=f=>_tmo(f(),7000);
+  return anyOk([
+    ()=>fetch(url).then(r=>r.text()).then(x=>parseRss(x,src)),
+    ()=>fetch('https://api.rss2json.com/v1/api.json?count=20&rss_url='+q).then(r=>r.json()).then(j=>(j.items||[]).map(i=>{ const enc=i.enclosure&&i.enclosure.link&&/\.(jpe?g|png|webp|gif)(\?|$)/i.test(i.enclosure.link)?i.enclosure.link:''; const p=Date.parse((i.pubDate||'').replace(' ','T')+'Z'); return {t:i.title,l:i.link,d:isNaN(p)?'':new Date(p).toISOString(),img:i.thumbnail||enc||firstImg(i.content)||firstImg(i.description),s:src}; })),
+    ()=>fetch('https://corsproxy.io/?'+q).then(r=>r.text()).then(x=>parseRss(x,src)),
+    ()=>fetch('https://api.allorigins.win/raw?url='+q).then(r=>r.text()).then(x=>parseRss(x,src))
+  ].map(T)); }
+function onNews(){ const f=document.getElementById('view-feed'); if(f&&!f.classList.contains('hidden')) renderFeed(); updateBadge(); }
+function loadNewsCache(){ if(window._news&&window._news.length) return; try{ const c=JSON.parse(localStorage.getItem('newsCache')||'null'); if(c&&c.items){ window._news=c.items.filter(isHealth); window._newsT=c.t; } }catch(e){} }
+function fetchNews(force){
+  loadNewsCache();
+  if(!force&&window._news&&window._news.length&&Date.now()-(window._newsT||0)<NEWS_TTL) return Promise.resolve(window._news);
+  if(window._nfp) return window._nfp;
+  window._nfp=new Promise(resolve=>{
+    let done=0, first=false, acc=[]; const total=NEWS_FEEDS.length+(PN_API?1:0);
+    const add=items=>{ items=(items||[]).filter(n=>n&&n.t&&n.l&&isHealth(n)); if(!items.length) return; const seen=new Set(acc.map(x=>x.l)); items.forEach(n=>{ if(!seen.has(n.l)){ seen.add(n.l); acc.push(n); } }); acc.sort((a,b)=>ts(b.d)-ts(a.d)); window._news=acc.slice(0,80); window._newsT=Date.now(); window._newsOk=true; if(!first){ first=true; resolve(window._news); } else onNews(); };
+    const fin=()=>{ if(++done<total) return; window._nfp=null; if(first){ try{ localStorage.setItem('newsCache',JSON.stringify({t:window._newsT,items:window._news})); }catch(e){} enrichImages(window._news); onNews(); } else{ window._newsOk=false; resolve(window._news||[]); } };
+    NEWS_FEEDS.forEach(([s,u])=>feedItems(s,u).then(add).catch(()=>{}).then(fin));
+    if(PN_API) _tmo(fetch(PN_API.replace(/\/$/,'')+'/api/news?category=todas').then(r=>r.json()),7000).then(j=>{ if(j&&j.success) add((j.news||[]).map(n=>({t:n.title,l:n.link,d:n.date||'',img:n.image||'',s:n.source||'Notícias'}))); }).catch(()=>{}).then(fin);
+    setTimeout(()=>{ if(!first) resolve(window._news||[]); },10000);
+  });
+  return window._nfp; }
+async function enrichImages(list){
+  let c={}; try{ c=JSON.parse(localStorage.getItem('ogCache')||'{}'); }catch(e){} const todo=[];
+  const put=(n,u)=>{ n.img=u; document.querySelectorAll('.ie-ph[data-nk]').forEach(d=>{ if(d.dataset.nk===n.l&&!d.querySelector('img')) d.insertAdjacentHTML('beforeend',imgTag(u,4)); }); };
+  (list||[]).slice(0,14).forEach(n=>{ if(n.img) return; if(c[n.l]) return put(n,c[n.l]); if(/news\.google\.com/.test(n.l)) return; todo.push(n); });
+  const run=async n=>{ try{ let h=''; for(const px of ['https://corsproxy.io/?','https://api.allorigins.win/raw?url=']){ try{ const r=await _tmo(fetch(px+encodeURIComponent(n.l)),6000); if(r.ok){ h=(await r.text()).slice(0,150000); if(h) break; } }catch(e){} } if(!h) return;
+    const m=/<meta[^>]+(?:property|name)=["'](?:og|twitter):image["'][^>]*content=["']([^"']+)["']/i.exec(h)||/<meta[^>]+content=["']([^"']+)["'][^>]*(?:property|name)=["'](?:og|twitter):image["']/i.exec(h);
+    if(m){ const u=imgUrl(m[1].replace(/&amp;/g,'&'),n.l); if(u){ c[n.l]=u; put(n,u); } } }catch(e){} };
+  for(let i=0;i<todo.length;i+=4) await Promise.all(todo.slice(i,i+4).map(run));
+  try{ const k=Object.keys(c); if(k.length>150) k.slice(0,k.length-150).forEach(x=>delete c[x]); localStorage.setItem('ogCache',JSON.stringify(c)); localStorage.setItem('newsCache',JSON.stringify({t:window._newsT,items:list})); }catch(e){} }
+function renderFeed(){
+  const all=(window._news||[]).filter(isHealth), rd=readSet(), c=window._pnc||'todas', q=(document.getElementById('pnSearch').value||'').trim().toLowerCase();
+  const list=all.filter(n=>(c==='todas'||pnMatch(n,c))&&(!q||(n.t||'').toLowerCase().includes(q)));
+  const fi=list.slice(0,12).findIndex(n=>n.img); if(fi>0){ const f0=list.splice(fi,1)[0]; list.unshift(f0); } window._pl=list;
+  const feat=document.getElementById('pnFeat'), box=document.getElementById('pnList'), msg=document.getElementById('pnMsg'); feat.innerHTML=''; box.innerHTML=''; msg.textContent='';
+  if(!list.length){ msg.textContent=all.length?'Nenhuma notícia encontrada.':''; return; }
+  const f=list[0];
+  feat.innerHTML=`<article class="pn-feat ${rd.has(f.l)?'pn-read':''}" onclick="feedOpen(0)">${iePhoto(f,0)}<div class="pn-fc"><span class="pn-fl">DESTAQUE</span><h3>${esc(f.t)}</h3><p class="pn-meta">${esc(f.s)} · ${pnDate(f.d)}</p></div></article>`;
+  box.innerHTML=list.slice(1).map((n,k)=>`<article class="pn-card ${rd.has(n.l)?'pn-read':''}" onclick="feedOpen(${k+1})"><div class="pn-thumb">${iePhoto(n,k+1)}</div><div class="pn-cc"><div><p class="pn-ct">${pnLabel(n)}</p><h4>${esc(n.t)}</h4></div><p class="pn-meta">${esc(n.s)} · ${pnDate(n.d)}</p></div></article>`).join(''); }
+async function loadFeed(force){
+  const msg=document.getElementById('pnMsg'), err=document.getElementById('pnErr'), btn=document.getElementById('pnRefresh'); err.classList.add('hidden'); btn.disabled=true;
+  loadNewsCache(); if((window._news||[]).length) renderFeed(); else msg.innerHTML='<i class="fa-solid fa-spinner animate-spin"></i> Carregando notícias de saúde...';
+  const all=await fetchNews(force); btn.disabled=false;
+  if(!all.length){ msg.textContent=''; err.classList.remove('hidden'); return; }
+  renderFeed(); updateBadge(); const hh=new Date(window._newsT||Date.now()).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('pnMsg').textContent=window._newsOk===false?'Sem conexão com as fontes: mostrando notícias salvas às '+hh:'Atualizado às '+hh; }
+setTimeout(()=>{ fetchNews().then(updateBadge); },300);
+
+/* ----- contador de medicamentos na Home ----- */
+function updateMedCount(){ const e=document.getElementById('homeMedCount'); if(e) e.textContent=medicines.length.toLocaleString('pt-BR'); }
+var _rhm=renderHomeMedicines; renderHomeMedicines=function(f){ _rhm(f); updateMedCount(); };
+var _sw2=switchTab; switchTab=function(n){ _sw2(n); updateMedCount(); };
+updateMedCount();
+
+/* ===== Sem voz/microfone: MAGI só por texto ===== */
+var MAGI_PERSONA='Você é o MAGI, assistente de farmácia. Converse como uma pessoa real e acolhedora, em português do Brasil: frases naturais e conectadas, sem listas robóticas, explicando passo a passo com exemplos simples e detalhes úteis. Fale de medicamentos, doses, riscos e primeiros socorros com cuidado, lembrando de forma leve que não substitui médico ou farmacêutico.';
+OPN.neutro.push('Entendi! Olha só:','Beleza, deixa eu te explicar direitinho.','Boa pergunta, vamos por partes.'); OPN.alegre.push('Adoro essa pergunta! 😊'); CLS.neutro.push('Ficou alguma dúvida? Pode perguntar do jeito que quiser.');
+MG.s.voice=false; MG.s.speakText=false;
+function mgToggleVoice(){} function mgSpeak(){} function mgStopSpeak(){} function mgStopListen(){} function mgListen(){} function mgMicTap(){}
+
+/* ===== Modo desenvolvedor 01 ===== */
+function mgDevReport(){ const total=medicines.length, cats={}; medicines.forEach(m=>{ cats[m.category]=(cats[m.category]||0)+1; });
+  const top=Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,6).map(x=>esc(x[0])+': '+x[1]).join(' · '), uniq=new Set(medicines.map(m=>N(m.name))).size, ctl=medicines.filter(m=>m.isControlled).length;
+  return mgSay('<b>Modo desenvolvedor 01 ativado.</b><br>Tenho <b>'+total+' medicamentos</b> salvos no banco de dados: '+uniq+' nomes únicos, '+ctl+' controlados e '+customCreatedIds.length+' criados por você.<br><small>Maiores classes: '+top+'</small><br>Quer que eu confira na internet se falta algum medicamento na lista?',{chips:['Verificar medicamentos ausentes','Sair do modo desenvolvedor']}); }
+async function mgDevCheck(){
+  if(!navigator.onLine) return mgSay('Estou sem internet agora. Conecte-se e peça de novo.');
+  const tb=mgBubble('a','<i>consultando o banco de dados da internet…</i>',false);
+  try{ const sq='SELECT DISTINCT ?l WHERE{?i wdt:P267 ?a. FILTER(STRLEN(?a)=7) ?i rdfs:label ?l. FILTER(LANG(?l)="pt")} LIMIT 6000';
+    const r=await _tmo(fetch('https://query.wikidata.org/sparql?format=json&query='+encodeURIComponent(sq)),30000); const j=await r.json(), labels=(j.results.bindings||[]).map(b=>b.l.value); tb.remove();
+    const have=new Set(); medicines.forEach(m=>N(m.name).split(/[^a-z]+/).filter(w=>w.length>=5).forEach(w=>{ have.add(w); have.add(w.slice(0,6)); }));
+    const miss=new Map(); labels.forEach(l=>{ const ws=N(l).split(/[^a-z]+/).filter(w=>w.length>=6&&!/^(acido|sulfato|cloridrato)$/.test(w)); if(!ws.length) return; const k=ws.sort((a,b)=>b.length-a.length)[0]; if(!have.has(k)&&!have.has(k.slice(0,6))&&!miss.has(k)) miss.set(k,l); });
+    const arr=[...miss.values()].sort((a,b)=>a.localeCompare(b,'pt')); window._devMiss=arr;
+    if(!arr.length) return mgSay('Conferi e não achei nenhuma substância faltando. Sua lista está completa em relação à base consultada.');
+    const sample=arr.slice(0,40), cap=sample.slice(0,4);
+    return mgSay('Conferi a base internacional (classificação ATC da OMS). Encontrei <b>'+arr.length+' substâncias</b> que não aparecem na sua lista. Algumas delas: '+sample.map(esc).join(', ')+'.<br><small>Alguns itens podem ser nomes diferentes de algo que você já tem. Quer cadastrar algum?</small>',{chips:cap.map(x=>'Cadastrar '+x)});
+  }catch(e){ tb.remove(); return mgSay('Não consegui acessar a base da internet agora. Tente de novo em instantes.'); } }
+var _mgH0=mgHandle;
+mgHandle=async function(q,fv){ const n=N(q).replace(WAKE,'').trim();
+  if(/(modo (de )?desenvolvedor|desenvolvedor)\s*(0?1|zero\s*(um|1)|um)\b/.test(n)){ mgBubble('u',esc(q)); window.mgDev=true; return mgDevReport(); }
+  if(window.mgDev){
+    if(/(sair|desativ|encerr)\w*\s+(do\s+|o\s+)?modo (de )?desenvolvedor/.test(n)){ mgBubble('u',esc(q)); window.mgDev=false; return mgSay('Modo desenvolvedor desligado. Voltei ao normal.'); }
+    if(/verific|ausente|faltan|faltam|comparar/.test(n)&&/medicament|ausente|lista|banco|internet/.test(n)){ mgBubble('u',esc(q)); return mgDevCheck(); }
+    const cm=/^cadastrar (.+)/.exec(n); if(cm){ mgBubble('u',esc(q)); const nome=(window._devMiss||[]).find(x=>N(x)===cm[1].trim())||cm[1]; switchTab('add'); setTimeout(()=>{ const i=document.getElementById('addName'); if(i) i.value=nome; },200); return mgSay('Abri o cadastro com <b>'+esc(nome)+'</b>. Preencha os dados e salve.'); } }
+  return _mgH0(q,fv); };
 
   </script>
 </body>
